@@ -31,10 +31,10 @@ void setup()
   // }
 
   mpu.begin();
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  Serial.println("Found a MPU-6050 sensor");
-  lastTime = millis();
+  // sensors_event_t a, g, temp;
+  // mpu.getEvent(&a, &g, &temp);
+  // Serial.println("Found a MPU-6050 sensor");
+  // lastTime = millis();
 }
 
 void loop()
@@ -48,7 +48,7 @@ void loop()
   // lastTime = now;
 
   float accPitch, accRoll;
-  std::tie(accPitch, accRoll) = get_angles();
+  std::tie(accPitch, accRoll) = get_angles(mpu);
 
   // Serial.print("Acceleration X: ");
   // Serial.print(a.acceleration.x);
@@ -82,10 +82,4 @@ void loop()
   Serial.print(", Roll: ");
   Serial.println(accRoll);
   delay(500);
-}
-
-// put function definitions here:
-int myFunction(int x, int y)
-{
-  return x + y;
 }

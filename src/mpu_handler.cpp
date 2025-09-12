@@ -5,11 +5,9 @@
 #include <tuple>
 
 // Sensor and filter variables are now private to this file
-static Adafruit_MPU6050 mpu;
-static float pitch = 0.0;
-static float roll = 0.0;
+// static Adafruit_MPU6050 mpu;
 
-std::tuple<float, float> get_angles()
+std::tuple<float, float> get_angles(Adafruit_MPU6050 &mpu)
 {
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
