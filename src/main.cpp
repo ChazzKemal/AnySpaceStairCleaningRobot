@@ -2,10 +2,11 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_Sensor.h>
+#include "mpu_handler.h"
 
 Adafruit_MPU6050 mpu;
 float pitch = 0.0, roll = 0.0;
-float alpha = 0.98; // complementary filter constant
+// float alpha = 0; // complementary filter constant
 unsigned long lastTime;
 
 void setup()
@@ -39,34 +40,47 @@ void setup()
 void loop()
 {
   // put your main code here, to run repeatedly:
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
+  // sensors_event_t a, g, temp;
+  // mpu.getEvent(&a, &g, &temp);
 
-  unsigned long now = millis();
-  float dt = (now - lastTime) / 1000.0; // seconds
-  lastTime = now;
+  // unsigned long now = millis();
+  // float dt = (now - lastTime) / 1000.0; // seconds
+  // lastTime = now;
 
-  Serial.print("Acceleration X: ");
-  Serial.print(a.acceleration.x);
-  Serial.print(", Y: ");
-  Serial.print(a.acceleration.y);
-  Serial.print(", Z: ");
-  Serial.print(a.acceleration.z);
-  Serial.println(" m/s^2");
+  float accPitch, accRoll;
+  std::tie(accPitch, accRoll) = get_angles();
 
-  Serial.print("Rotation X: ");
-  Serial.print(g.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(g.gyro.y);
-  Serial.print(", Z: ");
-  Serial.print(g.gyro.z);
-  Serial.println(" rad/s");
+  // Serial.print("Acceleration X: ");
+  // Serial.print(a.acceleration.x);
+  // Serial.print(", Y: ");
+  // Serial.print(a.acceleration.y);
+  // Serial.print(", Z: ");
+  // Serial.print(a.acceleration.z);
+  // Serial.println(" m/s^2");
 
-  Serial.print("Temperature: ");
-  Serial.print(temp.temperature);
-  Serial.println(" degC");
+  // pitch += g.gyro.x * dt * 180 / PI;
+  // roll += g.gyro.y * dt * 180 / PI;
+
+  // pitch = alpha * pitch + (1 - alpha) * accPitch;
+  // roll = alpha * roll + (1 - alpha) * accRoll;
+
+  // Serial.print("Rotation X: ");
+  // Serial.print(g.gyro.x);
+  // Serial.print(", Y: ");
+  // Serial.print(g.gyro.y);
+  // Serial.print(", Z: ");
+  // Serial.print(g.gyro.z);
+  // Serial.println(" rad/s");
+
+  // Serial.print("Temperature: ");
+  // Serial.print(temp.temperature);
+  // Serial.println(" degC");
 
   Serial.println("");
+  Serial.print("Pitch: ");
+  Serial.print(accPitch);
+  Serial.print(", Roll: ");
+  Serial.println(accRoll);
   delay(500);
 }
 
