@@ -115,7 +115,7 @@ void setup()
 
 void loop()
 {
-  Serial.println("loop");
+  
   Serial.println(wheel1->checkHomingPin());
   // wheel1->drive->moveToPosition(300);
   // delay(1000);

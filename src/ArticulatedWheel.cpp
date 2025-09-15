@@ -28,7 +28,7 @@ void ArticulatedWheel::begin(float max_drive_speed,
 
 
 bool ArticulatedWheel::checkHomingPin(){
-    return digitalRead(homingPin);
+    return (!digitalRead(homingPin));
 }
 
 
