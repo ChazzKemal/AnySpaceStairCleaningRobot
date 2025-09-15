@@ -49,6 +49,8 @@ public:
      * @param speed Speed in steps/sec (positive is forward, negative is backward).
      */
     void setDriveSpeed(float speed);
+    void setHeightSpeed(float speed);
+    void setAngleSpeed(float speed);
 
     /**
      * @brief Sets the steering angle of the wheel assembly.

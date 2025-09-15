@@ -39,6 +39,16 @@ void ArticulatedWheel::setDriveSpeed(float speed)
     m_drive.setSpeed(speed * m_drive_direction);
 }
 
+void ArticulatedWheel::setHeightSpeed(float speed)
+{
+    // Apply the direction multiplier to reverse the motor if needed
+    m_height.setSpeed(speed * m_height_direction);
+}
+
+void ArticulatedWheel::setAngleSpeed(float speed){
+    m_steer.setSpeed(speed * m_steer_direction);
+}
+
 void ArticulatedWheel::setSteerAngle(long angle_degrees)
 {
     // This assumes you have calibrated how many steps correspond to one degree.
