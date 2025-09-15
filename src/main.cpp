@@ -4,98 +4,274 @@
 #include <Adafruit_Sensor.h>
 #include "mpu_handler.h"
 #include <AccelStepper.h>
-
-Adafruit_MPU6050 mpu; // for esp32-s3-n16r8 sda 8, scl 9 pin
+#include <Adafruit_VL53L0X.h>
+#include <Wire.h>
+#include <FastAccelStepper.h>
+// Adafruit_MPU6050 mpu; // for esp32-s3-n16r8 sda 8, scl 9 pin
 //  float pitch = 0.0, roll = 0.0;
 //  // float alpha = 0; // complementary filter constant
 //  unsigned long lastTime;
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+SemaphoreHandle_t serialMutex;
 
-#define drive_step_pin 13
-#define drive_dir_pin 14
+#define drive_step_pin 14
+#define drive_dir_pin 12
 #define steer_step_pin 3
 #define steer_dir_pin 6
 
-AccelStepper m_drive(AccelStepper::DRIVER, drive_step_pin, drive_dir_pin);
+// AccelStepper m_drive(AccelStepper::DRIVER, drive_step_pin, drive_dir_pin);
 //  AccelStepper m_steer(AccelStepper::DRIVER, steer_step_pin, steer_dir_pin);
+FastAccelStepperEngine engine = FastAccelStepperEngine();
+FastAccelStepper *m_drive = NULL;
+
+// This function will be the dedicated task for motor control on Core 0
+// void motorTask(void *pvParameters)
+// {
+//   Serial.println("Motor task started (High Priority)");
+//   for (;;)
+//   {
+//     // This logic will always be prioritized
+//     if (m_drive.distanceToGo() == 0)
+//     {
+//       m_drive.moveTo(m_drive.currentPosition() + 300);
+//       // m_drive.moveTo(-m_drive.currentPosition());
+//     }
+//     m_drive.run();
+
+//     // Sleep for 1ms to allow other tasks a chance to run if they need to.
+//     // This is crucial to prevent watchdog resets.
+//     // vTaskDelay(1);
+//   }
+// }
+
+// --- Task 2: Low Priority Sensor Reading ---
+void sensorTask(void *pvParameters)
+{
+  // while (!lox.begin())
+  // {
+  //   Serial.println(F("Failed to boot VL53L0X"));
+  // }
+  // Wire.begin(8, 9);
+  // Serial.println("Sensor task started (Low Priority)");
+  VL53L0X_RangingMeasurementData_t measure; // Create a struct to hold the data
+  for (;;)
+  {
+    // This is a blocking call. It will start a measurement and wait for it to finish.
+    // This guarantees one reading per loop.
+    lox.rangingTest(&measure, false);
+
+    // Check if the reading was valid
+    if (measure.RangeStatus != 4)
+    {
+      // This print block is now effectively atomic for this task
+      Serial.print("Distance: ");
+      Serial.println(measure.RangeMilliMeter);
+    }
+    else
+    {
+      Serial.println("Out of range");
+    }
+
+    // This task can sleep for longer as it's less critical
+    vTaskDelay(100);
+  }
+}
+
+// void setup()
+// {
+//   Serial.begin(115200);
+//   // while (!Serial)
+//   //   ; // Wait for serial port to connect. Needed for native USB
+//   // Serial.println("Steer and drive demo");
+//   // mpu.begin();
+//   Wire.begin();
+
+//   // // Initialize the sensor
+//   if (!lox.begin())
+//   {
+//     Serial.println(F("Failed to boot VL53L0X"));
+//     while (1)
+//       ;
+//   }
+//   // m_steer.moveTo(1600);         // Set an initial target position (e.g., 1600 steps)
+//   // m_steer.setMaxSpeed(1000);    // Set maximum speed
+//   // m_steer.setAcceleration(500); // Set acceleration
+//   m_drive.moveTo(300);           // Set an initial target position (e.g., 3200 steps)
+//   m_drive.setMaxSpeed(500);      // Set maximum speed
+//   m_drive.setAcceleration(2000); // Set acceleration
+
+//   lox.startRangeContinuous(1000);
+// }
+
+unsigned long lastReadingTime = 0;
+const long readingInterval = 2000; // Read the sensor every 100 milliseconds (10 times/sec)
 
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial)
-    ; // Wait for serial port to connect. Needed for native USB
-  Serial.println("Steer and drive demo");
-
-  // while (!mpu.begin())
+  delay(1000);
+  engine.init();
+  // Serial.begin(115200);
+  // // delay(1000);
+  // Wire.begin(8, 9); // Use correct I2C pins for your board
+  // if (!lox.begin())
   // {
-  //   Serial.println("Sensor init failed, retrying...");
-  //   Serial.println(mpu.begin()); // This would be redundant
-  //   delay(1000);
-  // }
-
-  // if (!mpu.begin())
-  // {
-  //   Serial.println("Sensor init failed");
+  //   Serial.println(F("Failed to boot VL53L0X"));
   //   while (1)
-  //     yield();
+  //     ; // Halt if sensor is not found
   // }
+  // --- Sensor and Motor Configuration ---
+  // while (!lox.begin())
+  // {
+  //   Serial.println(F("Failed to boot VL53L0X"));
+  // }
+  // lox.begin();
+  // m_drive.moveTo(300);
+  // m_drive.setMaxSpeed(500);
+  // m_drive.setAcceleration(5000);
 
-  mpu.begin();
-  //  sensors_event_t a, g, temp;
-  //  mpu.getEvent(&a, &g, &temp);
-  //  Serial.println("Found a MPU-6050 sensor");
-  //  lastTime = millis();
-  // m_steer.moveTo(1600);         // Set an initial target position (e.g., 1600 steps)
-  // m_steer.setMaxSpeed(1000);    // Set maximum speed
-  // m_steer.setAcceleration(500); // Set acceleration
-  m_drive.moveTo(1600);          // Set an initial target position (e.g., 3200 steps)
-  m_drive.setMaxSpeed(1000);     // Set maximum speed
-  m_drive.setAcceleration(3000); // Set acceleration
+  // Create the stepper object from the engine
+  m_drive = engine.stepperConnectToPin(drive_step_pin);
+  if (m_drive)
+  {
+    m_drive->setDirectionPin(drive_dir_pin);
+    m_drive->setAcceleration(1000); // steps/s^2
+    m_drive->setSpeedInHz(100);     // steps/s
+    // m_drive->runForward();
+    // m_drive->move(300);
+  }
+
+  // --- Task Creation ---
+  // Get the handle for the current task (the setup/loop task)
+  // TaskHandle_t loopTaskHandle = xTaskGetCurrentTaskHandle();
+  // // // // Get the priority of the loop task
+  // UBaseType_t loopTaskPriority = uxTaskPriorityGet(loopTaskHandle);
+
+  // Create the motor task with a HIGHER priority than the loop
+  // xTaskCreatePinnedToCore(
+  //     motorTask,
+  //     "MotorTask",
+  //     4096,
+  //     NULL,
+  //     loopTaskPriority + 1, // Higher priority
+  //     NULL,
+  //     0); // Pin to Core 1 (Arduino core)
+
+  // Create the sensor task with a LOWER priority than the loop
+  // xTaskCreatePinnedToCore(
+  //     sensorTask,
+  //     "SensorTask",
+  //     4096,
+  //     NULL,
+  //     loopTaskPriority, // Lower priority
+  //     NULL,
+  //     0); // Pin to Core 1 (Arduino core)
 }
 
 void loop()
 {
+  Serial.println("Running forward...");
+  m_drive->runForward(); // Start running forward
+  delay(2000);           // Wait for 2 seconds
+
+  Serial.println("Running backward...");
+  m_drive->runBackward(); // Start running backward
+  delay(2000);            // Wait for 2 seconds
+  // if (!m_drive->isRunning())
+  // {
+  //   // Move back to the starting position (0) or to a new position (3000)
+  //   long new_pos = m_drive->getCurrentPosition() == 0 ? 3000 : 0;
+  //   m_drive->moveTo(new_pos);
+  // }
+
+  // if (millis() - lastReadingTime >= readingInterval)
+  // {
+  //   lastReadingTime = millis(); // Update the last reading time
+
+  //   VL53L0X_RangingMeasurementData_t measure;
+  //   lox.rangingTest(&measure, false); // This is a blocking call
+
+  //   if (measure.RangeStatus != 4)
+  //   {
+  //     Serial.print("Distance: ");
+  //     Serial.println(measure.RangeMilliMeter);
+  //   }
+  //   else
+  //   {
+  //     Serial.println("Out of range");
+  //   }
+  // }
+  // --- Sensor Reading Logic ---
+  // Use a non-blocking timer to read the sensor periodically
+  // unsigned long currentTime = millis();
+  // if (currentTime - lastReadingTime >= readingInterval)
+  // {
+  //   lastReadingTime = currentTime;
+  //   m_drive.moveTo(-m_drive.currentPosition());
+  // }
   // m_steer.run();
-  m_drive.run();
-  // put your main code here, to run repeatedly:
-  // sensors_event_t a, g, temp;
-  // mpu.getEvent(&a, &g, &temp);
+  // if (m_drive.distanceToGo() == 0)
+  // {
+  //   // If it has arrived, set a new target in the opposite direction.
+  //   // If the current position is 1600, the new target will be -1600.
+  //   // If the current position is -1600, the new target will be 1600.
+  //   m_drive.moveTo(-m_drive.currentPosition());
+  // }
+  // m_drive.run();
+  // if (lox.isRangeComplete())
+  // {
 
-  // unsigned long now = millis();
-  // float dt = (now - lastTime) / 1000.0; // seconds
-  // lastTime = now;
+  //   // 2. If it is ready, get the data. This is very fast.
+  //   int distance = lox.readRangeResult();
 
-  float accPitch, accRoll;
-  std::tie(accPitch, accRoll) = get_angles(mpu);
-
-  // Serial.print(a.acceleration.x);
-  // Serial.print(", Y: ");
-  // Serial.print(a.acceleration.y);
-  // Serial.print(", Z: ");
-  // Serial.print(a.acceleration.z);
-  // Serial.println(" m/s^2");
-
-  // pitch += g.gyro.x * dt * 180 / PI;
-  // roll += g.gyro.y * dt * 180 / PI;
-
-  // pitch = alpha * pitch + (1 - alpha) * accPitch;
-  // roll = alpha * roll + (1 - alpha) * accRoll;
-
-  // Serial.print("Rotation X: ");
-  // Serial.print(g.gyro.x);
-  // Serial.print(", Y: ");
-  // Serial.print(g.gyro.y);
-  // Serial.print(", Z: ");
-  // Serial.print(g.gyro.z);
-  // Serial.println(" rad/s");
-
-  // Serial.print("Temperature: ");
-  // Serial.print(temp.temperature);
-  // Serial.println(" degC");
-
-  // uncomment below
-  Serial.println("");
-  Serial.print("Pitch: ");
-  Serial.print(accPitch);
-  Serial.print(", Roll: ");
-  Serial.println(accRoll);
+  //   Serial.print("Distance: ");
+  //   Serial.println(distance);
+  // }
+  // The main loop can be left empty, as all work is now done in tasks.
+  // Or it can be used for the absolute lowest priority work.
+  // vTaskDelay(1000); // Don't let the loop spin without purpose
 }
+
+// void loop()
+// {
+
+//   if (m_drive.distanceToGo() == 0)
+//   {
+//     // If it has arrived, set a new target in the opposite direction.
+//     // If the current position is 1600, the new target will be -1600.
+//     // If the current position is -1600, the new target will be 1600.
+//     m_drive.moveTo(-m_drive.currentPosition());
+//   }
+//   // m_steer.run();
+//   m_drive.run();
+//   //  float accPitch, accRoll;
+//   //  std::tie(accPitch, accRoll) = get_angles(mpu);
+
+//   // // uncomment below
+//   // Serial.println("");
+//   // Serial.print("Pitch: ");
+//   // Serial.print(accPitch);
+//   // Serial.print(", Roll: ");
+//   // Serial.println(accRoll);
+
+//   // Serial.print("Reading a measurement... ");
+//   // Check if it's time to take a new sensor reading
+//   if (lox.isRangeComplete())
+//   {
+
+//     // 2. If it is ready, get the data. This is very fast.
+//     int distance = lox.readRangeResult();
+
+//     // Serial.print("Distance: ");
+//     // Serial.println(distance);
+//   }
+//   // if (measure.RangeStatus != 4)
+//   // { // phase failures have incorrect data
+//   //   Serial.print("Distance (mm): ");
+//   //   Serial.println(measure.RangeMilliMeter);
+//   // }
+//   // else
+//   // {
+//   //   Serial.println(" out of range ");
+//   // }
+// }
