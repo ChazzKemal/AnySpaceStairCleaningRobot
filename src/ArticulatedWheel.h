@@ -16,13 +16,15 @@ class Stepper {
     public: 
         Stepper(FastAccelStepperEngine *engine , uint8_t drive_step_pin, uint8_t drive_dir_pin,bool invert);
         void init(float speed,float acceleration,float conversionFactor);
-        float position;
+        float position;    // this is the real world position so e.g. mm or degrees
         bool invertDir;
         float default_Speed;
         float default_acceleration;
         int convertToSteps(float realWorldValue);
         FastAccelStepper *_stepper;
         void moveSteps(int steps);
+        void moveToPosition(float pos);
+        void moveRelative(float relPos);
     private:
         float conversionFactor;
 };
@@ -54,7 +56,7 @@ public:
 
     ArticulatedWheel(FastAccelStepperEngine *engine , uint8_t drive_step_pin, uint8_t drive_dir_pin,
                      uint8_t steer_step_pin, uint8_t steer_dir_pin,
-                     uint8_t height_step_pin, uint8_t height_dir_pin,
+                     uint8_t height_step_pin, uint8_t height_dir_pin,uint8_t _homingPin,
                      bool invert_drive = false, bool invert_steer = false, bool invert_height = false);
 
     /**
@@ -68,32 +70,11 @@ public:
                float acceleration_steer = 2000,
                float acceleration_height = 2000);
 
-    // --- Low-Level Control for This Wheel ---
+    
+    bool checkHomingPin();
 
-    /**
-     * @brief Sets the rolling speed of the wheel.
-     * @param speed Speed in steps/sec (positive is forward, negative is backward).
-     */
-    void setDriveSpeed(float speed);
-    void setHeightSpeed(float speed);
-    void setAngleSpeed(float speed);
 
-    /**
-     * @brief Sets the steering angle of the wheel assembly.
-     * @param angle_degrees Target angle in degrees.
-     */
-    void setSteerAngle(long angle_degrees);
 
-    /**
-     * @brief Sets the vertical position (height) of the wheel.
-     * @param position Target height in steps.
-     */
-    void setHeight(long position);
-
-    /**
-     * @brief Must be called continuously to update all three motors.
-     */
-    void run();
 
 private:
     // The AccelStepper objects are now members of the class, not references.
@@ -102,6 +83,7 @@ private:
     int m_drive_direction;
     int m_steer_direction;
     int m_height_direction;
+    uint8_t homingPin;
 };
 
 

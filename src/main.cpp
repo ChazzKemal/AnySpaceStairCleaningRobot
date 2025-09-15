@@ -22,6 +22,7 @@ SemaphoreHandle_t serialMutex;
 #define HEIGHT_DIR_PIN 6
 #define STEER_STEP_PIN 16
 #define STEER_DIR_PIN 15
+#define HOMING_PIN 21
 
 
 
@@ -91,6 +92,7 @@ void setup()
   // digitalWrite(DRIVE_STEP_PIN, LOW);
   // digitalWrite(DRIVE_DIR_PIN, LOW);
   Serial.begin(115200);
+  
   delay(500);
 
   Serial.println("start code");
@@ -101,7 +103,7 @@ void setup()
 
   wheel1 = new ArticulatedWheel(engine, DRIVE_STEP_PIN, DRIVE_DIR_PIN,
                             STEER_STEP_PIN, STEER_DIR_PIN,
-                            HEIGHT_STEP_PIN, HEIGHT_DIR_PIN,
+                            HEIGHT_STEP_PIN, HEIGHT_DIR_PIN,HOMING_PIN,
                             false, false, false);
 
   
@@ -114,14 +116,12 @@ void setup()
 void loop()
 {
   Serial.println("loop");
-  wheel1->drive->moveSteps(300);
-  delay(1000);
-  wheel1->drive->moveSteps(-300);
-  delay(1000);
-  // stepper->moveSteps(30);
-  // delay(800);
-  // stepper->moveSteps(-30);
-  // delay(800);
+  Serial.println(wheel1->checkHomingPin());
+  // wheel1->drive->moveToPosition(300);
+  // delay(1000);
+  // wheel1->drive->moveToPosition(-300);
+  // delay(1000);
+
   
 
 
