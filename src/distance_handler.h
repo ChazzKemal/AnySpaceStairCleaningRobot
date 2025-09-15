@@ -1,0 +1,13 @@
+#ifndef DISTANCE_HANDLER_H
+#define DISTANCE_HANDLER_H
+#include <stdint.h>
+#include <array>
+#include "robot_config.h"
+#include "Adafruit_VL53L0X.h"
+
+void tca_select(uint8_t channel);
+
+std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data(std::array<Adafruit_VL53L0X, NUM_SENSORS> &sensors,
+                                                   std::array<uint16_t, NUM_SENSORS> &sensor_data);
+
+#endif // DISTANCE_HANDLER_H
