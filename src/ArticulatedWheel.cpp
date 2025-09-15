@@ -1,20 +1,14 @@
 #include "ArticulatedWheel.h"
 
 // The constructor now takes pin numbers and initializes the AccelStepper objects directly.
-ArticulatedWheel::ArticulatedWheel(uint8_t drive_step_pin, uint8_t drive_dir_pin,
+ArticulatedWheel::ArticulatedWheel(FastAccelStepperEngine* engine,uint8_t drive_step_pin, uint8_t drive_dir_pin,
                                    uint8_t steer_step_pin, uint8_t steer_dir_pin,
                                    uint8_t height_step_pin, uint8_t height_dir_pin,
                                    bool invert_drive, bool invert_steer, bool invert_height)
-    : // Use an initializer list to construct the AccelStepper objects.
-      // This assumes you are using a standard STEP/DIR driver.
-      m_drive(AccelStepper::DRIVER, drive_step_pin, drive_dir_pin),
-      m_steer(AccelStepper::DRIVER, steer_step_pin, steer_dir_pin),
-      m_height(AccelStepper::DRIVER, height_step_pin, height_dir_pin)
 {
-    // Set direction multipliers based on the boolean flags.
-    m_drive_direction = invert_drive ? -1 : 1;
-    m_steer_direction = invert_steer ? -1 : 1;
-    m_height_direction = invert_height ? -1 : 1;
+    drive =  new Stepper(engine,drive_step_pin,drive_dir_pin,invert_drive);
+    steer =  new Stepper(engine,steer_step_pin,steer_dir_pin,invert_steer);
+    height =  new Stepper(engine,height_step_pin,height_dir_pin,invert_height);
 }
 
 void ArticulatedWheel::begin(float max_drive_speed,
@@ -23,50 +17,45 @@ void ArticulatedWheel::begin(float max_drive_speed,
                              float acceleration_drive,
                              float acceleration_steer,
                              float acceleration_height)
-{
-    m_drive.setMaxSpeed(max_drive_speed);
-    m_steer.setMaxSpeed(max_steer_speed);
-    m_height.setMaxSpeed(max_height_speed);
-
-    m_drive.setAcceleration(acceleration_drive); // Set acceleration
-    m_steer.setAcceleration(acceleration_steer);
-    m_height.setAcceleration(acceleration_height);
+{   // Those are the Default Speeds
+    drive->init(max_drive_speed,acceleration_drive,1);
+    steer->init(max_steer_speed,acceleration_steer,1);
+    height->init(max_height_speed,acceleration_height,1);
 }
 
-void ArticulatedWheel::setDriveSpeed(float speed)
-{
-    // Apply the direction multiplier to reverse the motor if needed
-    m_drive.setSpeed(speed * m_drive_direction);
+
+
+
+
+Stepper::Stepper(FastAccelStepperEngine* engine,uint8_t step_pin, uint8_t dir_pin,bool invert){
+    _stepper = engine->stepperConnectToPin(step_pin);
+    invertDir = invert;
+    if (_stepper){
+        _stepper->setDirectionPin(dir_pin);
+        Serial.println("initialization worked");
+    }
+    else{
+        
+        Serial.println("Stepper initialization failed");
+    
+    }
 }
 
-void ArticulatedWheel::setHeightSpeed(float speed)
-{
-    // Apply the direction multiplier to reverse the motor if needed
-    m_height.setSpeed(speed * m_height_direction);
+void Stepper::init(float speed,float acceleration,float conversionfact){
+    default_Speed = speed;
+    default_acceleration = acceleration;
+    conversionFactor    = conversionfact;
+    _stepper->setAcceleration(acceleration); // steps/s^2
+    _stepper->setSpeedInHz(speed);     // steps/s
+
 }
 
-void ArticulatedWheel::setAngleSpeed(float speed){
-    m_steer.setSpeed(speed * m_steer_direction);
+void Stepper:: moveSteps(int steps){
+    Serial.println("doing steps ");
+ 
+    _stepper->move(steps);
 }
 
-void ArticulatedWheel::setSteerAngle(long angle_degrees)
-{
-    // This assumes you have calibrated how many steps correspond to one degree.
-    // Example: 200 steps/rev * 8 microsteps / 360 degrees = 4.44 steps/degree
-    const float STEPS_PER_DEGREE = 4.44;
-    // Apply the direction multiplier
-    m_steer.moveTo(angle_degrees * STEPS_PER_DEGREE * m_steer_direction);
-}
-
-void ArticulatedWheel::setHeight(long position)
-{
-    // Apply the direction multiplier
-    m_height.moveTo(position * m_height_direction);
-}
-
-void ArticulatedWheel::run()
-{
-    m_drive.runSpeed(); // Use runSpeed() for continuous rotation
-    m_steer.run();      // Use run() for moving to a target position
-    m_height.run();     // Use run() for moving to a target position
+int Stepper::convertToSteps(float moveBy){
+    return conversionFactor * moveBy;
 }

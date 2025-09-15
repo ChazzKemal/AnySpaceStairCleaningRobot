@@ -7,6 +7,7 @@
 #include <Adafruit_VL53L0X.h>
 #include <Wire.h>
 #include <FastAccelStepper.h>
+#include "ArticulatedWheel.h"
 // Adafruit_MPU6050 mpu; // for esp32-s3-n16r8 sda 8, scl 9 pin
 //  float pitch = 0.0, roll = 0.0;
 //  // float alpha = 0; // complementary filter constant
@@ -14,36 +15,39 @@
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 SemaphoreHandle_t serialMutex;
 
-#define drive_step_pin 5
-#define drive_dir_pin 4
-#define steer_step_pin 3
-#define steer_dir_pin 6
+// -------------WHEEL 1 --------------------
+#define DRIVE_STEP_PIN 5
+#define DRIVE_DIR_PIN 4
+#define HEIGHT_STEP_PIN 5
+#define HEIGHT_DIR_PIN 4
+#define STEER_STEP_PIN 5
+#define STEER_DIR_PIN 4
 
-// AccelStepper m_drive(AccelStepper::DRIVER, drive_step_pin, drive_dir_pin);
+
+
+
+//  ------------------ Speeds   (speed in steps)
+
+#define HEIGHT_SPEED 100
+#define DRIVE_SPEED 100
+#define STEER_SPEED 100 
+
+//  ------------------Accelerations 
+
+
+#define HEIGHT_ACC 1000
+#define DRIVE_ACC 1000
+#define STEER_ACC 1000
+
+
+
+// AccelStepper m_drive(AccelStepper::DRIVER, DRIVE_STEP_PIN, DRIVE_DIR_PIN);
 //  AccelStepper m_steer(AccelStepper::DRIVER, steer_step_pin, steer_dir_pin);
-FastAccelStepperEngine engine = FastAccelStepperEngine();
+FastAccelStepperEngine *engine = new FastAccelStepperEngine();
 FastAccelStepper *m_drive = NULL;
-
-// This function will be the dedicated task for motor control on Core 0
-// void motorTask(void *pvParameters)
-// {
-//   Serial.println("Motor task started (High Priority)");
-//   for (;;)
-//   {
-//     // This logic will always be prioritized
-//     if (m_drive.distanceToGo() == 0)
-//     {
-//       m_drive.moveTo(m_drive.currentPosition() + 300);
-//       // m_drive.moveTo(-m_drive.currentPosition());
-//     }
-//     m_drive.run();
-
-//     // Sleep for 1ms to allow other tasks a chance to run if they need to.
-//     // This is crucial to prevent watchdog resets.
-//     // vTaskDelay(1);
-//   }
-// }
-
+ArticulatedWheel *wheel1;
+Stepper *stepper;
+// This function will be the dedicated task for motor control on Core 
 // --- Task 2: Low Priority Sensor Reading ---
 void sensorTask(void *pvParameters)
 {
@@ -84,39 +88,42 @@ const long readingInterval = 2000; // Read the sensor every 100 milliseconds (10
 
 void setup()
 { 
-  // digitalWrite(drive_step_pin, LOW);
-  // digitalWrite(drive_dir_pin, LOW);
+  // digitalWrite(DRIVE_STEP_PIN, LOW);
+  // digitalWrite(DRIVE_DIR_PIN, LOW);
   Serial.begin(115200);
+  delay(500);
+
+  Serial.println("start code");
+
+
   
-  engine.init();
+  engine->init();
+
+  wheel1 = new ArticulatedWheel(engine, DRIVE_STEP_PIN, DRIVE_DIR_PIN,
+                            STEER_STEP_PIN, STEER_DIR_PIN,
+                            HEIGHT_STEP_PIN, HEIGHT_DIR_PIN,
+                            false, false, false);
+
   
 
-
-  m_drive = engine.stepperConnectToPin(drive_step_pin);
-  if (m_drive)
-  {
-    m_drive->setDirectionPin(drive_dir_pin);
-    m_drive->setAcceleration(1000); // steps/s^2
-    m_drive->setSpeedInHz(100);     // steps/s
-
-  }
-
-
+  wheel1->begin(DRIVE_SPEED,STEER_SPEED,HEIGHT_SPEED,DRIVE_ACC,STEER_ACC,HEIGHT_ACC);
+  // stepper = new Stepper(engine,DRIVE_STEP_PIN,DRIVE_DIR_PIN,false);
+  // stepper->init(DRIVE_SPEED,STEER_SPEED,1);
 }
 
 void loop()
 {
-  Serial.println("Running forward...");
-  m_drive->runForward(); // Start running forward
-  delay(2000);           // Wait for 2 seconds
+  Serial.println("loop");
+  wheel1->drive->moveSteps(30);
+  delay(1000);
+  wheel1->drive->moveSteps(-30);
+  delay(1000);
+  // stepper->moveSteps(30);
+  // delay(800);
+  // stepper->moveSteps(-30);
+  // delay(800);
+  
 
-  Serial.println("Running backward...");
-  m_drive->runBackward(); // Start running backward
-  delay(2000);            // Wait for 2 seconds
-    // m_drive->runForward();
-    // m_drive->move(300);
-    // m_drive->runBackward();
-    // m_drive->move(300);
 
 
 }
