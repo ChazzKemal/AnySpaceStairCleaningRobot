@@ -18,10 +18,10 @@ SemaphoreHandle_t serialMutex;
 // -------------WHEEL 1 --------------------
 #define DRIVE_STEP_PIN 5
 #define DRIVE_DIR_PIN 4
-#define HEIGHT_STEP_PIN 5
-#define HEIGHT_DIR_PIN 4
-#define STEER_STEP_PIN 5
-#define STEER_DIR_PIN 4
+#define HEIGHT_STEP_PIN 7
+#define HEIGHT_DIR_PIN 6
+#define STEER_STEP_PIN 16
+#define STEER_DIR_PIN 15
 
 
 
@@ -114,9 +114,9 @@ void setup()
 void loop()
 {
   Serial.println("loop");
-  wheel1->drive->moveSteps(30);
+  wheel1->drive->moveSteps(300);
   delay(1000);
-  wheel1->drive->moveSteps(-30);
+  wheel1->drive->moveSteps(-300);
   delay(1000);
   // stepper->moveSteps(30);
   // delay(800);
