@@ -7,22 +7,36 @@
 #include <Adafruit_VL53L0X.h>
 #include <Wire.h>
 #include <FastAccelStepper.h>
-// Adafruit_MPU6050 mpu; // for esp32-s3-n16r8 sda 8, scl 9 pin
+// Adafruit_MPU6050 mpu; // for esp32-s3-n16r8 sda 8, scl 9 pin, sda 21,scl 22 for esp32
 //  float pitch = 0.0, roll = 0.0;
 //  // float alpha = 0; // complementary filter constant
 //  unsigned long lastTime;
-Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-SemaphoreHandle_t serialMutex;
+#define TCAADDR 0x70
 
-#define drive_step_pin 14
-#define drive_dir_pin 12
-#define steer_step_pin 3
-#define steer_dir_pin 6
+// Create two sensor objects
+Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
+Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
+
+// Helper function to select the I2C channel on the multiplexer
+void tca_select(uint8_t channel)
+{
+  if (channel > 7)
+    return;
+
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << channel);
+  Wire.endTransmission();
+}
+
+// #define drive_step_pin 14
+// #define drive_dir_pin 12
+// #define steer_step_pin 3
+// #define steer_dir_pin 6
 
 // AccelStepper m_drive(AccelStepper::DRIVER, drive_step_pin, drive_dir_pin);
 //  AccelStepper m_steer(AccelStepper::DRIVER, steer_step_pin, steer_dir_pin);
-FastAccelStepperEngine engine = FastAccelStepperEngine();
-FastAccelStepper *m_drive = NULL;
+// FastAccelStepperEngine engine = FastAccelStepperEngine();
+// FastAccelStepper *m_drive = NULL;
 
 // This function will be the dedicated task for motor control on Core 0
 // void motorTask(void *pvParameters)
@@ -45,37 +59,37 @@ FastAccelStepper *m_drive = NULL;
 // }
 
 // --- Task 2: Low Priority Sensor Reading ---
-void sensorTask(void *pvParameters)
-{
-  // while (!lox.begin())
-  // {
-  //   Serial.println(F("Failed to boot VL53L0X"));
-  // }
-  // Wire.begin(8, 9);
-  // Serial.println("Sensor task started (Low Priority)");
-  VL53L0X_RangingMeasurementData_t measure; // Create a struct to hold the data
-  for (;;)
-  {
-    // This is a blocking call. It will start a measurement and wait for it to finish.
-    // This guarantees one reading per loop.
-    lox.rangingTest(&measure, false);
+// void sensorTask(void *pvParameters)
+// {
+//   // while (!lox.begin())
+//   // {
+//   //   Serial.println(F("Failed to boot VL53L0X"));
+//   // }
+//   // Wire.begin(8, 9);
+//   // Serial.println("Sensor task started (Low Priority)");
+//   VL53L0X_RangingMeasurementData_t measure; // Create a struct to hold the data
+//   for (;;)
+//   {
+//     // This is a blocking call. It will start a measurement and wait for it to finish.
+//     // This guarantees one reading per loop.
+//     lox.rangingTest(&measure, false);
 
-    // Check if the reading was valid
-    if (measure.RangeStatus != 4)
-    {
-      // This print block is now effectively atomic for this task
-      Serial.print("Distance: ");
-      Serial.println(measure.RangeMilliMeter);
-    }
-    else
-    {
-      Serial.println("Out of range");
-    }
+//     // Check if the reading was valid
+//     if (measure.RangeStatus != 4)
+//     {
+//       // This print block is now effectively atomic for this task
+//       Serial.print("Distance: ");
+//       Serial.println(measure.RangeMilliMeter);
+//     }
+//     else
+//     {
+//       Serial.println("Out of range");
+//     }
 
-    // This task can sleep for longer as it's less critical
-    vTaskDelay(100);
-  }
-}
+//     // This task can sleep for longer as it's less critical
+//     vTaskDelay(100);
+//   }
+// }
 
 // void setup()
 // {
@@ -109,8 +123,36 @@ const long readingInterval = 2000; // Read the sensor every 100 milliseconds (10
 void setup()
 {
   Serial.begin(115200);
-  delay(1000);
-  engine.init();
+  while (!Serial)
+  {
+    delay(1); // Wait for serial port to connect
+  }
+  Serial.println("Dual VL53L0X Test with TCA9548A Multiplexer");
+
+  // Initialize I2C bus
+  Wire.begin();
+
+  // --- Initialize Sensor 1 on Channel 0 ---
+  tca_select(0);
+  if (!lox1.begin())
+  {
+    Serial.println(F("Failed to boot VL53L0X on channel 0"));
+    while (1)
+      ;
+  }
+  Serial.println(F("VL53L0X 1 booted on channel 0"));
+
+  // --- Initialize Sensor 2 on Channel 1 ---
+  tca_select(1);
+  if (!lox2.begin())
+  {
+    Serial.println(F("Failed to boot VL53L0X on channel 1"));
+    while (1)
+      ;
+  }
+  Serial.println(F("VL53L0X 2 booted on channel 1"));
+  // delay(1000);
+  // engine.init();
   // Serial.begin(115200);
   // // delay(1000);
   // Wire.begin(8, 9); // Use correct I2C pins for your board
@@ -131,15 +173,15 @@ void setup()
   // m_drive.setAcceleration(5000);
 
   // Create the stepper object from the engine
-  m_drive = engine.stepperConnectToPin(drive_step_pin);
-  if (m_drive)
-  {
-    m_drive->setDirectionPin(drive_dir_pin);
-    m_drive->setAcceleration(1000); // steps/s^2
-    m_drive->setSpeedInHz(100);     // steps/s
-    // m_drive->runForward();
-    // m_drive->move(300);
-  }
+  // m_drive = engine.stepperConnectToPin(drive_step_pin);
+  // if (m_drive)
+  // {
+  //   m_drive->setDirectionPin(drive_dir_pin);
+  //   m_drive->setAcceleration(1000); // steps/s^2
+  //   m_drive->setSpeedInHz(500);     // steps/s
+  //   // m_drive->runForward();
+  //   // m_drive->move(300);
+  // }
 
   // --- Task Creation ---
   // Get the handle for the current task (the setup/loop task)
@@ -170,13 +212,45 @@ void setup()
 
 void loop()
 {
-  Serial.println("Running forward...");
-  m_drive->runForward(); // Start running forward
-  delay(2000);           // Wait for 2 seconds
+  VL53L0X_RangingMeasurementData_t measure;
 
-  Serial.println("Running backward...");
-  m_drive->runBackward(); // Start running backward
-  delay(2000);            // Wait for 2 seconds
+  // --- Read from Sensor 1 ---
+  tca_select(0);
+  lox1.rangingTest(&measure, false); // false = not in debug mode
+
+  if (measure.RangeStatus != 4)
+  { // phase failures have incorrect data
+    Serial.print("Sensor 1 Distance (mm): ");
+    Serial.println(measure.RangeMilliMeter);
+  }
+  else
+  {
+    Serial.println("Sensor 1 out of range");
+  }
+
+  // --- Read from Sensor 2 ---
+  tca_select(1);
+  lox2.rangingTest(&measure, false);
+
+  if (measure.RangeStatus != 4)
+  {
+    Serial.print("Sensor 2 Distance (mm): ");
+    Serial.println(measure.RangeMilliMeter);
+  }
+  else
+  {
+    Serial.println("Sensor 2 out of range");
+  }
+
+  Serial.println("--------------------");
+  delay(500); // Wait half a second between measurement sets
+  // Serial.println("Running forward...");
+  // m_drive->runForward(); // Start running forward
+  // delay(2000);           // Wait for 2 seconds
+
+  // Serial.println("Running backward...");
+  // m_drive->runBackward(); // Start running backward
+  // delay(2000);            // Wait for 2 seconds
   // if (!m_drive->isRunning())
   // {
   //   // Move back to the starting position (0) or to a new position (3000)
