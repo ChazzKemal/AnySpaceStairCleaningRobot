@@ -24,6 +24,7 @@ void AnySpace1::begin()
     {
         wheel.begin();
     }
+    AnySpace1::home();
 }
 
 AnySpace1::AnySpace1()
@@ -60,21 +61,45 @@ void AnySpace1::home()
     }
 
     const uint8_t home_pins[] = {FL_HOME_PIN, FR_HOME_PIN, RL_HOME_PIN, RR_HOME_PIN};
-
-    for (int i = 0; i < NUM_WHEELS; ++i)
+    bool all_homed = true;
+    while (!all_homed)
     {
-        // Check if this specific motor is still running
-        if (wheels[i].height->_stepper->isRunning())
+        for (int i = 0; i < NUM_WHEELS; ++i)
         {
-            // Read the limit switch. Assumes switch is connected to GND (active-LOW).
-            if (digitalRead(home_pins[i]) == LOW)
+            // Check if this specific motor is still running
+            if (wheels[i].height->_stepper->isRunning())
             {
-                // The switch is pressed! Stop the motor and reset its position to 0.
-                wheels[i].height->_stepper->forceStopAndNewPosition(0);
-                Serial.print("Wheel ");
-                Serial.print(i);
-                Serial.println(" is home.");
+                // Read the limit switch. Assumes switch is connected to GND (active-LOW).
+                if (digitalRead(home_pins[i]) == HIGH)
+                {
+                    // The switch is pressed! Stop the motor and reset its position to 0.
+                    wheels[i].height->_stepper->forceStopAndNewPosition(0);
+                    Serial.print("Wheel height ");
+                    Serial.print(i);
+                    Serial.println(" is home.");
+                    wheels[i].height->moveSteps(-100); // Ensure motor is stopped
+                    wheels[i].steer->_stepper->runForward();
+                }
+            }
+            if (wheels[i].steer->_stepper->isRunning())
+            {
+                if (digitalRead(home_pins[i]) == HIGH)
+                {
+                    wheels[i].steer->_stepper->forceStopAndNewPosition(0);
+                    Serial.print("Wheel steer ");
+                    Serial.print(i);
+                    Serial.println(" is home.");
+                    all_homed = true; // Assume all homed, will verify below
+                    for (int j = 0; j < NUM_WHEELS; ++j)
+                    {
+                        // ...exjsting code...
+                        if (wheels[i].height->_stepper->isRunning() || wheels[j].steer->_stepper->isRunning())
+                        {
+                            all_homed = false; // Still running, so not all homed
+                        }
+                    }
+                }
             }
         }
-    }
+    };
 }
