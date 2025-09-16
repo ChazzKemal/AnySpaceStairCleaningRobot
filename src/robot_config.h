@@ -23,9 +23,9 @@ enum Wheel
 };
 
 // --- Max Speed (steps/sec) ---
-#define MAX_DRIVE_SPEED 1000.0
-#define MAX_STEER_SPEED 500.0
-#define MAX_HEIGHT_SPEED 500.0
+#define MAX_DRIVE_SPEED 100.0
+#define MAX_STEER_SPEED 100.0
+#define MAX_HEIGHT_SPEED 100.0
 
 // --- Acceleration (steps/sec^2) ---
 #define ACCEL_DRIVE 3000.0
@@ -35,26 +35,27 @@ enum Wheel
 // --- Pin Definitions ---
 
 // --- HOMING SWITCH PINS ---
-#define FL_HOME_PIN 99 // Example pin
-#define FR_HOME_PIN 99
-#define RL_HOME_PIN 99
-#define RR_HOME_PIN 99
+#define FL_HOME_PIN 21 // Example pin
+// #define FR_HOME_PIN
+// #define RL_HOME_PIN 99
+// #define RR_HOME_PIN 99
 
 // --- Front Left Wheel Pins ---
 #define FL_DRIVE_STEP_PIN 5
 #define FL_DRIVE_DIR_PIN 4
-#define FL_STEER_STEP_PIN 99
-#define FL_STEER_DIR_PIN 99
-#define FL_HEIGHT_STEP_PIN 99
-#define FL_HEIGHT_DIR_PIN 99
+#define FL_STEER_STEP_PIN 7
+#define FL_STEER_DIR_PIN 6
+#define FL_HEIGHT_STEP_PIN 18
+#define FL_HEIGHT_DIR_PIN 17
 
 // --- Front Right Wheel Pins ---
 #define FR_DRIVE_STEP_PIN 12
 #define FR_DRIVE_DIR_PIN 13
 #define FR_STEER_STEP_PIN 14
-#define FR_STEER_DIR_PIN 15
-#define FR_HEIGHT_STEP_PIN 16
-#define FR_HEIGHT_DIR_PIN 17
+// #define FR_STEER_DIR_PIN 15
+// #define FR_HEIGHT_STEP_PIN 16
+
+// #define FR_HEIGHT_DIR_PIN 17
 
 // --- Rear Left Wheel Pins ---
 #define RL_DRIVE_STEP_PIN 21

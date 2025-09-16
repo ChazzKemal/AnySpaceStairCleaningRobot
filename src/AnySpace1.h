@@ -37,9 +37,9 @@ public:
 
 private:
     Adafruit_MPU6050 mpu;
-    FastAccelStepperEngine m_engine; // The robot owns the single stepper engine
-
-    std::array<ArticulatedWheel, NUM_WHEELS> wheels;
+    FastAccelStepperEngine *m_engine = new FastAccelStepperEngine();
+    std::array<ArticulatedWheel *, NUM_WHEELS> wheels; // Changed to array of pointers
+    // std::array<ArticulatedWheel, NUM_WHEELS> wheels;
     std::array<Adafruit_VL53L0X, NUM_SENSORS> distance_sensors;
     std::array<uint16_t, NUM_SENSORS> sensor_data;
     float pitch = 0.0f;
