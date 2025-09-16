@@ -103,3 +103,38 @@ void AnySpace1::home()
         }
     };
 }
+
+void AnySpace1::go_n_steps(float n_steps)
+{
+    for (auto &wheel : wheels)
+    {
+        wheel.drive->moveSteps(n_steps);
+    }
+}
+
+void AnySpace1::change_direction()
+{
+    for (auto &wheel : wheels)
+    {
+        wheel.drive->invertDir = !wheel.drive->invertDir;
+    }
+}
+void AnySpace1::go_vertically(float n_steps)
+{
+    for (auto &wheel : wheels)
+    {
+        wheel.height->moveSteps(n_steps);
+    }
+}
+void AnySpace1::turn_wheel(float n_steps)
+{
+    for (auto &wheel : wheels)
+    {
+        wheel.steer->moveSteps(n_steps);
+    }
+}
+void AnySpace1::get_sensor_data()
+{
+    this->sensor_data = get_vl53l0x_data();
+    std::tie(this->pitch, this->roll) = get_mpu_data();
+}
