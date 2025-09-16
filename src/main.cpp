@@ -52,31 +52,29 @@ void setup()
   //   Serial.println(F("Failed to boot VL53L0X on channel 1"));
   //   while (1)
   //     ;
+
+  // engine->init();
+
+  // wheel1 = new ArticulatedWheel(engine, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN,
+  //                               FL_STEER_STEP_PIN, FL_STEER_DIR_PIN,
+  //                               FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN,
+  //                               false, false, false);
+
+  // wheel1->begin();
   cleaning_robot.begin();
-}
+  cleaning_robot.home();
+  vacUnit = new Vacuum();
+  // m_drive = engine.stepperConnectToPin(FL_DRIVE_STEP_PIN);
+  // m_drive->setDirectionPin(FL_DRIVE_DIR_PIN, /*dir_high_is_forward=*/true);
 
-// engine->init();
+  // m_drive->setSpeedInHz(400);     // max step rate (steps/second)
+  // m_drive->setAcceleration(2000); // steps/second^2
 
-// wheel1 = new ArticulatedWheel(engine, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN,
-//                               FL_STEER_STEP_PIN, FL_STEER_DIR_PIN,
-//                               FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN,
-//                               false, false, false);
+  // m_drive->moveTo(2000);
+  // ads   = new Adafruit_ADS1115();
+  // ads->begin(0x48)  ;
 
-// wheel1->begin();
-cleaning_robot.begin();
-cleaning_robot.home();
-vacUnit = new Vacuum();
-// m_drive = engine.stepperConnectToPin(FL_DRIVE_STEP_PIN);
-// m_drive->setDirectionPin(FL_DRIVE_DIR_PIN, /*dir_high_is_forward=*/true);
-
-// m_drive->setSpeedInHz(400);     // max step rate (steps/second)
-// m_drive->setAcceleration(2000); // steps/second^2
-
-// m_drive->moveTo(2000);
-// ads   = new Adafruit_ADS1115();
-// ads->begin(0x48)  ;
-
-// ads->setGain(GAIN_ONE);
+  // ads->setGain(GAIN_ONE);
 }
 
 void loop()
@@ -97,5 +95,5 @@ void loop()
   //  delay(1000);
   // cleaning_robot.get_sensor_data();
   // cleaning_robot.print_sensor_data();
-  cleaning_robot.run();
+  // cleaning_robot.run();
 }
