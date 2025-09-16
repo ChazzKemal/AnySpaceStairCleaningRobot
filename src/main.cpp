@@ -10,11 +10,13 @@
 #include <FastAccelStepper.h>
 #include <AnySpace1.h>
 #include <robot_config.h>
+#include "vacuumUnit.h"
+#include <Adafruit_ADS1X15.h>
 
 #define TCAADDR 0x70
 AnySpace1 cleaning_robot;
-// Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
-// Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
+Vacuum *vacUnit;
+// Adafruit_ADS1115 * ads;
 
 // ArticulatedWheel *wheel1;
 // FastAccelStepperEngine *m_engine = new FastAccelStepperEngine();
@@ -61,29 +63,33 @@ void setup()
 //                               false, false, false);
 
 // wheel1->begin();
-// cleaning_robot.begin();
-// cleaning_robot.home();
-//  m_drive = engine.stepperConnectToPin(FL_DRIVE_STEP_PIN);
-//  m_drive->setDirectionPin(FL_DRIVE_DIR_PIN, /*dir_high_is_forward=*/true);
+cleaning_robot.begin();
+cleaning_robot.home();
+vacUnit = new Vacuum();
+// m_drive = engine.stepperConnectToPin(FL_DRIVE_STEP_PIN);
+// m_drive->setDirectionPin(FL_DRIVE_DIR_PIN, /*dir_high_is_forward=*/true);
 
 // m_drive->setSpeedInHz(400);     // max step rate (steps/second)
 // m_drive->setAcceleration(2000); // steps/second^2
 
 // m_drive->moveTo(2000);
+// ads   = new Adafruit_ADS1115();
+// ads->begin(0x48)  ;
+
+// ads->setGain(GAIN_ONE);
+}
 
 void loop()
 {
-  // VL53L0X_RangingMeasurementData_t measure;
-  // tca_select(0);
-  // lox1.rangingTest(&measure, false);
-  // Serial.print("Sensor 1 Distance (mm): ");
-  // Serial.println(measure.RangeMilliMeter);
-  // delay(300);
-  // tca_select(1);
-  // lox1.rangingTest(&measure, false);
-  // Serial.print("Sensor 2 Distance (mm): ");
-  // Serial.println(measure.RangeMilliMeter);
-  // delay(300);
+
+  // Serial.println(ads->readADC_SingleEnded(0));
+  vacUnit->turnOnBrizzles();
+  vacUnit->turnOnVacuum();
+  delay(500);
+  vacUnit->turnOffBrizzles();
+  vacUnit->turnOffVacuum();
+  delay(500);
+
   // cleaning_robot.run();
   //  wheel1->drive->moveToPosition(300);
   //  delay(1000);

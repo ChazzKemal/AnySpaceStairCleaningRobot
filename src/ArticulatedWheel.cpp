@@ -1,8 +1,9 @@
 #include "ArticulatedWheel.h"
 #include <Arduino.h>
 #include <robot_config.h>
+#include <Adafruit_ADS1X15.h>
 // The constructor now takes pin numbers and initializes the AccelStepper objects directly.
-ArticulatedWheel::ArticulatedWheel(FastAccelStepperEngine *engine, uint8_t drive_step_pin, uint8_t drive_dir_pin,
+ArticulatedWheel::ArticulatedWheel(FastAccelStepperEngine *engine, Adafruit_ADS1115 *_ads , uint8_t drive_step_pin, uint8_t drive_dir_pin,
                                    uint8_t steer_step_pin, uint8_t steer_dir_pin,
                                    uint8_t height_step_pin, uint8_t height_dir_pin, uint8_t _homingPin,
                                    bool invert_drive, bool invert_steer, bool invert_height)
@@ -11,6 +12,9 @@ ArticulatedWheel::ArticulatedWheel(FastAccelStepperEngine *engine, uint8_t drive
     steer = new Stepper(engine, steer_step_pin, steer_dir_pin, invert_steer);
     height = new Stepper(engine, height_step_pin, height_dir_pin, invert_height);
     homingPin = _homingPin;
+    ads = _ads;
+
+
 }
 
 void ArticulatedWheel::begin(float max_drive_speed,
@@ -23,12 +27,14 @@ void ArticulatedWheel::begin(float max_drive_speed,
     drive->init(max_drive_speed, acceleration_drive, CONVERSION_FACTOR_DRIVE);
     steer->init(max_steer_speed, acceleration_steer, CONVERSION_FACTOR_STEER);
     height->init(max_height_speed, acceleration_height, CONVERSION_FACTOR_HEIGHT);
-    pinMode(homingPin, INPUT_PULLUP);
+    
 }
 
 bool ArticulatedWheel::checkHomingPin()
 {
-    return (!digitalRead(homingPin));
+    if (ads->readADC_SingleEnded(homingPin)>=1000){return true   ;}
+    return false;
+
 }
 
 Stepper::Stepper(FastAccelStepperEngine *engine, uint8_t step_pin, uint8_t dir_pin, bool invert)

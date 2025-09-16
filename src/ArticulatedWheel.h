@@ -3,6 +3,7 @@
 
 #include <FastAccelStepper.h>
 #include <robot_config.h>
+#include <Adafruit_ADS1X15.h>
 /**
  * @class ArticulatedWheel
  * @brief Manages a single advanced wheel assembly with 3 degrees of freedom.
@@ -51,9 +52,10 @@ public:
     Stepper *steer;
     Stepper *height;
 
-    ArticulatedWheel(FastAccelStepperEngine *engine, uint8_t drive_step_pin, uint8_t drive_dir_pin,
+
+    ArticulatedWheel(FastAccelStepperEngine *engine, Adafruit_ADS1115 *ads ,uint8_t drive_step_pin, uint8_t drive_dir_pin,
                      uint8_t steer_step_pin, uint8_t steer_dir_pin,
-                     uint8_t height_step_pin, uint8_t height_dir_pin, uint8_t _homingPin,
+                     uint8_t height_step_pin, uint8_t height_dir_pin, uint8_t homingPin,
                      bool invert_drive = false, bool invert_steer = false, bool invert_height = false);
 
     /**
@@ -76,6 +78,7 @@ private:
     int m_steer_direction;
     int m_height_direction;
     uint8_t homingPin;
+    Adafruit_ADS1115 * ads;
 };
 
 #endif // ARTICULATED_WHEEL_H

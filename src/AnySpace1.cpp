@@ -3,6 +3,7 @@
 #include "robot_config.h"
 #include "ArticulatedWheel.h"
 #include "mpu_handler.h"
+
 std::array<uint16_t, NUM_SENSORS> AnySpace1::get_vl53l0x_data()
 {
     // Call the handler function and pass our private sensor array to it.
@@ -18,6 +19,11 @@ void AnySpace1::begin()
     Serial.begin(115200);
     Wire.begin();
     mpu.begin();
+
+    ads->begin(0x48);
+
+    ads->setGain(GAIN_ONE);
+
     for (int i = 0; i < NUM_SENSORS; ++i)
     {
         tca_select(i);
@@ -39,18 +45,13 @@ void AnySpace1::begin()
 }
 
 AnySpace1::AnySpace1()
-// TODO: decide on if to keep these or not
-//  : distance_sensors{
-//        Adafruit_VL53L0X(),
-//        Adafruit_VL53L0X(),
-//        Adafruit_VL53L0X(),
-//        Adafruit_VL53L0X(),
-//        Adafruit_VL53L0X()}
 
 {
     m_engine->init(); // Call init() first.
     // distance_sensors[0] = new Adafruit_VL53L0X();
     // distance_sensors[1] = new Adafruit_VL53L0X();
+    ads = new Adafruit_ADS1115();
+
     // Now, create the wheels.
     wheels[0] = new ArticulatedWheel(m_engine, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN, FL_INVERT_DRIVE, FL_INVERT_STEER, FL_INVERT_HEIGHT);
     wheels[1] = new ArticulatedWheel(m_engine, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FL_HOME_PIN, FR_INVERT_DRIVE, FR_INVERT_STEER, FR_INVERT_HEIGHT);

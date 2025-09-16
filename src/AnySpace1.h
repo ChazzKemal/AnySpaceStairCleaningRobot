@@ -4,6 +4,7 @@
 #include <Adafruit_MPU6050.h>
 #include "Adafruit_VL53L0X.h"
 #include "robot_config.h"
+#include <Adafruit_ADS1X15.h>
 /**
  * @class AnySpace1
  * @brief Represents the entire robot, managing all its components.
@@ -39,6 +40,7 @@ public:
 
 private:
     Adafruit_MPU6050 mpu;
+    Adafruit_ADS1115 * ads ;
     FastAccelStepperEngine *m_engine = new FastAccelStepperEngine();
     std::array<ArticulatedWheel *, NUM_WHEELS> wheels; // Changed to array of pointers
     // std::array<ArticulatedWheel, NUM_WHEELS> wheels;
@@ -47,6 +49,7 @@ private:
     std::array<uint16_t, NUM_SENSORS> sensor_data;
     float pitch = 0.0f;
     float roll = 0.0f;
+    
 };
 
 #endif
