@@ -16,6 +16,8 @@ public:
     void begin();
     void run();
     // for drive movement, could be backwards could be forward
+    void run_forward();
+    void run_backward();
     void go_n_steps(float n_steps);
     // basically for drive direction
     void change_direction();

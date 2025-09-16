@@ -16,6 +16,7 @@ std::tuple<float, float> AnySpace1::get_mpu_data()
 
 void AnySpace1::begin()
 {
+    Serial.begin(115200);
     Wire.begin();
     mpu.begin();
     FastAccelStepperEngine engine = FastAccelStepperEngine();
@@ -137,4 +138,28 @@ void AnySpace1::get_sensor_data()
 {
     this->sensor_data = get_vl53l0x_data();
     std::tie(this->pitch, this->roll) = get_mpu_data();
+}
+
+void AnySpace1::run_forward()
+{
+    for (auto &wheel : wheels)
+    {
+        wheel.drive->_stepper->runForward();
+    }
+}
+
+void AnySpace1::run_backward()
+{
+    for (auto &wheel : wheels)
+    {
+        wheel.drive->_stepper->runBackward();
+    }
+}
+
+void AnySpace1::stop()
+{
+    for (auto &wheel : wheels)
+    {
+        wheel.drive->_stepper->forceStop();
+    }
 }
