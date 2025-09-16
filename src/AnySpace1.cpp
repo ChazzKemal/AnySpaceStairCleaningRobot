@@ -161,3 +161,41 @@ void AnySpace1::stop()
         wheel.drive->_stepper->forceStop();
     }
 }
+
+void AnySpace1::run()
+{
+    bool trial_done = false;
+
+    if (!trial_done)
+    {
+        AnySpace1::get_sensor_data();
+        AnySpace1::print_sensor_data();
+        run_forward();
+        delay(500);
+        stop();
+        run_backward();
+        delay(500);
+        stop();
+        delay(1000);
+        turn_wheel(200);
+        delay(500);
+        go_vertically(200);
+        delay(500);
+        trial_done = true;
+    }
+}
+
+void AnySpace1::print_sensor_data()
+{
+    Serial.print("Pitch: ");
+    Serial.print(this->pitch);
+    Serial.print(", Roll: ");
+    Serial.println(this->roll);
+    for (int i = 0; i < NUM_SENSORS; ++i)
+    {
+        Serial.print("Distance Sensor ");
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.println(this->sensor_data[i]);
+    }
+}

@@ -32,6 +32,7 @@ public:
     std::tuple<float, float> get_mpu_data();
     // get data from vl53l0x sensors maybe 8 bit?
     std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data();
+    void print_sensor_data();
     void home();
 
 private:

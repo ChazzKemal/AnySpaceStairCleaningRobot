@@ -121,9 +121,10 @@
 // unsigned long lastReadingTime = 0;
 // const long readingInterval = 2000; // Read the sensor every 100 milliseconds (10 times/sec)
 
+AnySpace1 cleaning_robot;
 void setup()
 {
-  AnySpace1 cleaning_robot;
+  cleaning_robot.begin();
   // Serial.begin(115200);
   // while (!Serial)
   // {
@@ -214,7 +215,7 @@ void setup()
 
 void loop()
 {
-
+  cleaning_robot.run();
   // VL53L0X_RangingMeasurementData_t measure;
 
   // // --- Read from Sensor 1 ---
