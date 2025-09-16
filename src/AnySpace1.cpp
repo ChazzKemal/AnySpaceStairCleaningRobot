@@ -35,13 +35,15 @@ void AnySpace1::begin()
     }
     wheels[0]->begin();
     wheels[1]->begin();
+    //wheels[2]->begin();
+    // wheels[3]->begin();
     // for (auto &wheel : wheels)
     // {
     //     wheel->begin();
     // }
     // AnySpace1::home();
-    AnySpace1::go_initial_state();
-    AnySpace1::align_with_wall();
+    // AnySpace1::go_initial_state();
+    // AnySpace1::align_with_wall();
 }
 
 AnySpace1::AnySpace1()
@@ -55,8 +57,8 @@ AnySpace1::AnySpace1()
     // Now, create the wheels.
     wheels[0] = new ArticulatedWheel(m_engine, ads, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN, FL_INVERT_DRIVE, FL_INVERT_STEER, FL_INVERT_HEIGHT);
     wheels[1] = new ArticulatedWheel(m_engine, ads, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FL_HOME_PIN, FR_INVERT_DRIVE, FR_INVERT_STEER, FR_INVERT_HEIGHT);
-    // wheels[2] = new ArticulatedWheel(m_engine, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, FL_HOME_PIN, RL_INVERT_DRIVE, RL_INVERT_STEER, RL_INVERT_HEIGHT);
-    // wheels[3] = new ArticulatedWheel(m_engine, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, FL_HOME_PIN, RR_INVERT_DRIVE, RR_INVERT_STEER, RR_INVERT_HEIGHT);
+    // wheels[2] = new ArticulatedWheel(m_engine, ads, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, FL_HOME_PIN, RL_INVERT_DRIVE, RL_INVERT_STEER, RL_INVERT_HEIGHT);
+    wheels[2] = new ArticulatedWheel(m_engine, ads, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, FL_HOME_PIN, RR_INVERT_DRIVE, RR_INVERT_STEER, RR_INVERT_HEIGHT);
 }
 
 void AnySpace1::home()
@@ -65,6 +67,9 @@ void AnySpace1::home()
     bool steer_seek[NUM_WHEELS] = {false};
     wheels[0]->height->_stepper->runForward(); // max step rate (steps/second)
     wheels[1]->height->_stepper->runForward(); // TODO: change to height
+    //wheels[2]->height->_stepper->runForward(); // max step rate (steps/second)
+    // wheels[3]->height->_stepper->runForward(); // TODO: change to height
+    
     // for (auto &wheel : wheels)
     // {
     //     wheel->height->_stepper->runForward();
