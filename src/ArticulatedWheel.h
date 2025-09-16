@@ -2,7 +2,7 @@
 #define ARTICULATED_WHEEL_H
 
 #include <FastAccelStepper.h>
-
+#include <robot_config.h>
 /**
  * @class ArticulatedWheel
  * @brief Manages a single advanced wheel assembly with 3 degrees of freedom.
@@ -62,10 +62,9 @@ public:
      * @param max_steer_speed Max speed for the steering motor (steps/sec).
      * @param max_height_speed Max speed for the height motor (steps/sec).
      */
-    void begin(float max_drive_speed = 1000.0, float max_steer_speed = 500.0, float max_height_speed = 500.0,
-               float acceleration_drive = 2000,
-               float acceleration_steer = 2000,
-               float acceleration_height = 2000);
+    void begin(float max_drive_speed = MAX_DRIVE_SPEED, float max_steer_speed = MAX_STEER_SPEED, float max_height_speed = MAX_HEIGHT_SPEED,
+               float acceleration_drive = ACCEL_DRIVE, float acceleration_steer = ACCEL_STEER,
+               float acceleration_height = ACCEL_HEIGHT);
 
     bool checkHomingPin();
 

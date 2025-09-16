@@ -22,13 +22,23 @@ enum Wheel
     NUM_WHEELS // This will be 4
 };
 
+// --- Max Speed (steps/sec) ---
+#define MAX_DRIVE_SPEED 1000.0
+#define MAX_STEER_SPEED 500.0
+#define MAX_HEIGHT_SPEED 500.0
+
+// --- Acceleration (steps/sec^2) ---
+#define ACCEL_DRIVE 3000.0
+#define ACCEL_STEER 1000.0
+#define ACCEL_HEIGHT 1000.0
+
 // --- Pin Definitions ---
 
 // --- HOMING SWITCH PINS ---
 #define FL_HOME_PIN 2 // Example pin
-#define FR_HOME_PIN 4 // Example pin
-#define RL_HOME_PIN 5 // Example pin
-#define RR_HOME_PIN 7 // Example pin
+#define FR_HOME_PIN 4
+#define RL_HOME_PIN 5
+#define RR_HOME_PIN 7
 
 // --- Front Left Wheel Pins ---
 #define FL_DRIVE_STEP_PIN 2
@@ -61,5 +71,25 @@ enum Wheel
 #define RR_STEER_DIR_PIN 36
 #define RR_HEIGHT_STEP_PIN 37
 #define RR_HEIGHT_DIR_PIN 38
+
+// --- Front-Left Wheel ---
+#define FL_INVERT_DRIVE false
+#define FL_INVERT_STEER false
+#define FL_INVERT_HEIGHT false
+
+// --- Front-Right Wheel ---
+#define FR_INVERT_DRIVE true // Example: This wheel might be mirrored
+#define FR_INVERT_STEER false
+#define FR_INVERT_HEIGHT false
+
+// --- Rear-Left Wheel ---
+#define RL_INVERT_DRIVE false
+#define RL_INVERT_STEER true
+#define RL_INVERT_HEIGHT false
+
+// --- Rear-Right Wheel ---
+#define RR_INVERT_DRIVE true // Example: This wheel might be mirrored
+#define RR_INVERT_STEER true
+#define RR_INVERT_HEIGHT false
 
 #endif // ROBOT_CONFIG_H
