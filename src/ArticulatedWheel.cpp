@@ -1,5 +1,6 @@
 #include "ArticulatedWheel.h"
 #include <Arduino.h>
+#include <robot_config.h>
 // The constructor now takes pin numbers and initializes the AccelStepper objects directly.
 ArticulatedWheel::ArticulatedWheel(FastAccelStepperEngine *engine, uint8_t drive_step_pin, uint8_t drive_dir_pin,
                                    uint8_t steer_step_pin, uint8_t steer_dir_pin,
@@ -19,9 +20,9 @@ void ArticulatedWheel::begin(float max_drive_speed,
                              float acceleration_steer,
                              float acceleration_height)
 { // Those are the Default Speeds
-    drive->init(max_drive_speed, acceleration_drive, 1);
-    steer->init(max_steer_speed, acceleration_steer, 1);
-    height->init(max_height_speed, acceleration_height, 1);
+    drive->init(max_drive_speed, acceleration_drive, CONVERSION_FACTOR_DRIVE);
+    steer->init(max_steer_speed, acceleration_steer, CONVERSION_FACTOR_STEER);
+    height->init(max_height_speed, acceleration_height, CONVERSION_FACTOR_HEIGHT);
     pinMode(homingPin, INPUT_PULLUP);
 }
 

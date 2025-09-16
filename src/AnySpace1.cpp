@@ -107,7 +107,7 @@ void AnySpace1::go_n_steps(float n_steps)
 {
     for (auto &wheel : wheels)
     {
-        wheel.drive->moveSteps(n_steps);
+        wheel.drive->moveRelative(n_steps);
     }
 }
 
@@ -122,14 +122,14 @@ void AnySpace1::go_vertically(float n_steps)
 {
     for (auto &wheel : wheels)
     {
-        wheel.height->moveSteps(n_steps);
+        wheel.height->moveRelative(n_steps);
     }
 }
 void AnySpace1::steer_wheel(float n_steps)
 {
     for (auto &wheel : wheels)
     {
-        wheel.steer->moveSteps(n_steps);
+        wheel.steer->moveRelative(n_steps);
     }
 }
 void AnySpace1::get_sensor_data()

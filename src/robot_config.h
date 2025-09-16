@@ -92,4 +92,8 @@ enum Wheel
 #define RR_INVERT_STEER true
 #define RR_INVERT_HEIGHT false
 
+#define CONVERSION_FACTOR_DRIVE 1  // Example: 0.1 mm per step
+#define CONVERSION_FACTOR_STEER 1  // Example: 0.
+#define CONVERSION_FACTOR_HEIGHT 1 // Example: 0.1 mm per step
+
 #endif // ROBOT_CONFIG_H
