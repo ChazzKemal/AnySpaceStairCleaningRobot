@@ -33,13 +33,13 @@ AnySpace1::AnySpace1()
       wheels{
           {// The order here MUST match the 'Wheel' enum
            // FRONT_LEFT
-           ArticulatedWheel(&m_engine, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, false, false, false),
+           ArticulatedWheel(&m_engine, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN, false, false, false),
            // FRONT_RIGHT
-           ArticulatedWheel(&m_engine, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, false, false, false),
+           ArticulatedWheel(&m_engine, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FR_HOME_PIN, false, false, false),
            // REAR_LEFT
-           ArticulatedWheel(&m_engine, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, false, false, false),
+           ArticulatedWheel(&m_engine, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, RL_HOME_PIN, false, false, false),
            // REAR_RIGHT
-           ArticulatedWheel(&m_engine, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, false, false, false)}},
+           ArticulatedWheel(&m_engine, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, RR_HOME_PIN, false, false, false)}},
       distance_sensors{
           // The order here MUST match the 'Sensor' enum
           Adafruit_VL53L0X(), // FRONT_LEFT
@@ -111,7 +111,7 @@ void AnySpace1::go_n_steps(float n_steps)
     }
 }
 
-void AnySpace1::change_direction()
+void AnySpace1::reverse_direction()
 {
     for (auto &wheel : wheels)
     {

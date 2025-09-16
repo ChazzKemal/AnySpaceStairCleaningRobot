@@ -21,7 +21,7 @@ public:
     void stop();
     void go_n_steps(float n_steps);
     // basically for drive direction
-    void change_direction();
+    void reverse_direction();
     // for height direction. Could be positive could be negative
     void go_vertically(float n_steps);
     // for steering direction. Could be positive could be negative

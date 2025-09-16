@@ -37,7 +37,6 @@ enum Wheel
 #define FL_STEER_DIR_PIN 5
 #define FL_HEIGHT_STEP_PIN 6
 #define FL_HEIGHT_DIR_PIN 7
-#define FL_STEER_LIMIT_PIN 8
 
 // --- Front Right Wheel Pins ---
 #define FR_DRIVE_STEP_PIN 12
@@ -46,7 +45,6 @@ enum Wheel
 #define FR_STEER_DIR_PIN 15
 #define FR_HEIGHT_STEP_PIN 16
 #define FR_HEIGHT_DIR_PIN 17
-#define FR_STEER_LIMIT_PIN 18
 
 // --- Rear Left Wheel Pins ---
 #define RL_DRIVE_STEP_PIN 21
@@ -55,7 +53,6 @@ enum Wheel
 #define RL_STEER_DIR_PIN 25
 #define RL_HEIGHT_STEP_PIN 26
 #define RL_HEIGHT_DIR_PIN 27
-#define RL_STEER_LIMIT_PIN 32
 
 // --- Rear Right Wheel Pins ---
 #define RR_DRIVE_STEP_PIN 33
@@ -64,6 +61,5 @@ enum Wheel
 #define RR_STEER_DIR_PIN 36
 #define RR_HEIGHT_STEP_PIN 37
 #define RR_HEIGHT_DIR_PIN 38
-#define RR_STEER_LIMIT_PIN 39
 
 #endif // ROBOT_CONFIG_H
