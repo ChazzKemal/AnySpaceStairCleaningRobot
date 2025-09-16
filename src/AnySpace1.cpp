@@ -19,13 +19,11 @@ void AnySpace1::begin()
     Serial.begin(115200);
     Wire.begin();
     mpu.begin();
-    FastAccelStepperEngine engine = FastAccelStepperEngine();
-    FastAccelStepper *m_drive = NULL;
     for (auto &wheel : wheels)
     {
         wheel.begin();
     }
-    AnySpace1::home();
+    // AnySpace1::home();
 }
 
 AnySpace1::AnySpace1()
@@ -143,6 +141,7 @@ void AnySpace1::run_forward()
     for (auto &wheel : wheels)
     {
         wheel.drive->_stepper->runForward();
+        break;
     }
 }
 
@@ -168,19 +167,19 @@ void AnySpace1::run()
 
     if (!trial_done)
     {
-        AnySpace1::get_sensor_data();
-        AnySpace1::print_sensor_data();
+        // AnySpace1::get_sensor_data();
+        // AnySpace1::print_sensor_data();
         run_forward();
-        delay(500);
-        stop();
-        run_backward();
-        delay(500);
-        stop();
-        delay(1000);
-        steer_wheel(200);
-        delay(500);
-        go_vertically(200);
-        delay(500);
+        delay(2000);
+        // stop();
+        // run_backward();
+        // delay(500);
+        // stop();
+        // delay(1000);
+        // steer_wheel(200);
+        // delay(500);
+        // go_vertically(200);
+        // delay(500);
         trial_done = true;
     }
 }
