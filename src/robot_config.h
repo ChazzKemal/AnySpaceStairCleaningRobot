@@ -4,9 +4,9 @@
 // This enum is now globally accessible to any file that includes this header.
 enum Vl53l0xSensor
 {
-    FLOOR_BELOW,
     STAIR_WALL1,
     STAIR_WALL2,
+    FLOOR_BELOW,
     FRONT,
     REAR,
     NUM_SENSORS // This will be 5
@@ -38,6 +38,7 @@ enum Wheel
 
 // Algorithm parameters
 #define DISTANCE_TO_WALL 200.0 // in mm
+#define ALIGN_THRESHOLD 50.0
 
 // --- Pin Definitions ---
 

@@ -34,6 +34,8 @@ void AnySpace1::begin()
     //     wheel->begin();
     // }
     // AnySpace1::home();
+    AnySpace1::go_initial_state();
+    AnySpace1::align_with_wall();
 }
 
 AnySpace1::AnySpace1()
@@ -61,6 +63,7 @@ void AnySpace1::home()
     bool height_seek[NUM_WHEELS] = {true};
     bool steer_seek[NUM_WHEELS] = {false};
     wheels[0]->height->_stepper->runForward(); // max step rate (steps/second)
+    wheels[1]->height->_stepper->runForward(); // TODO: change to height
     // for (auto &wheel : wheels)
     // {
     //     wheel->height->_stepper->runForward();
@@ -209,50 +212,121 @@ void AnySpace1::run()
 
 void AnySpace1::go_initial_state()
 {
-    for (auto &wheel : wheels)
+    // for (auto &wheel : wheels)
+    // {
+    //     wheel->steer->moveToPosition(INITIAL_HEIGHT);
+    //     wheel->height->moveToPosition(INITIAL_STEER_ANGLE);
+    // }
+
+    for (int i = 0; i < 2; ++i)
     {
-        wheel->steer->moveToPosition(INITIAL_HEIGHT);
-        wheel->height->moveToPosition(INITIAL_STEER_ANGLE);
+        // Check if the pointer is valid before using it to prevent crashes
+        if (wheels[i] != nullptr)
+        {
+            wheels[i]->steer->moveToPosition(INITIAL_HEIGHT);
+            wheels[i]->height->moveToPosition(INITIAL_STEER_ANGLE);
+        }
     }
+
+    // bool motors_running;
+    // do
+    // {
+    //     motors_running = false;
+    //     for (auto &wheel : wheels)
+    //     {
+    //         if (wheel->height->_stepper->isRunning() || wheel->steer->_stepper->isRunning())
+    //         {
+    //             motors_running = true;
+    //             break;
+    //         }
+    //     }
+    // } while (motors_running);
+
+    bool motors_running;
+    do
+    {
+        motors_running = false;
+        for (int j = 0; j < 2; ++j) // < NUM_WHEELS; ++j)
+        {
+            auto wheel = wheels[j];
+
+            if (wheel->height->_stepper->isRunning() || wheel->steer->_stepper->isRunning())
+            {
+                motors_running = true;
+                break;
+            }
+        }
+    } while (motors_running);
+    Serial.println("Reached initial state.");
 }
 
 void AnySpace1::align_with_wall()
 {
     bool left_stopped = false;
     bool right_stopped = false;
-    for (auto &wheel : wheels)
-    {
-        wheel->drive->_stepper->runForward();
-    }
+
+    // Start both motors
+    // for (auto &wheel : wheels)
+    // {
+    //     wheel->drive->_stepper->runForward();
+    // }
+    wheels[0]->drive->_stepper->runForward();
+    wheels[1]->drive->_stepper->runForward();
+
     while (true)
     {
         get_sensor_data();
+        // print_sensor_data();
         float left_distance = this->sensor_data[STAIR_WALL1];
         float right_distance = this->sensor_data[STAIR_WALL2];
 
-        if (left_distance < DISTANCE_TO_WALL && !left_stopped)
+        float diff = fabs(left_distance - right_distance);
+
+        // Serial.print("Align Distance: ");
+        // Serial.println(diff);
+        // If left already stopped, keep right running and check difference
+        if (left_stopped && !right_stopped)
         {
-            wheels[0]->drive->_stepper->forceStop();
-            wheels[2]->drive->_stepper->forceStop();
-            left_stopped = true;
-            if (right_stopped)
+            if (diff < ALIGN_THRESHOLD)
             {
+                wheels[1]->drive->_stepper->forceStop();
+                // wheels[3]->drive->_stepper->forceStop();
+                right_stopped = true;
+                Serial.println("Aligned with wall.");
                 break;
             }
         }
-        if (right_distance < DISTANCE_TO_WALL && !right_stopped)
+        // If right already stopped, keep left running and check difference
+        else if (right_stopped && !left_stopped)
         {
-            wheels[1]->drive->_stepper->forceStop();
-            wheels[3]->drive->_stepper->forceStop();
-            right_stopped = true;
-            if (left_stopped)
+            if (diff < ALIGN_THRESHOLD)
             {
+                wheels[0]->drive->_stepper->forceStop();
+                // wheels[2]->drive->_stepper->forceStop();
+                left_stopped = true;
+                Serial.println("Aligned with wall.");
                 break;
             }
+        }
+        else
+        {
+            // Neither side stopped yet → check if one reaches initial wall threshold
+            if (left_distance < DISTANCE_TO_WALL && !left_stopped)
+            {
+                wheels[0]->drive->_stepper->forceStop();
+                // wheels[2]->drive->_stepper->forceStop();
+                left_stopped = true;
+            }
+            if (right_distance < DISTANCE_TO_WALL && !right_stopped)
+            {
+                wheels[1]->drive->_stepper->forceStop();
+                // wheels[3]->drive->_stepper->forceStop();
+                right_stopped = true;
+            }
+            Serial.println("Aligning with wall...");
         }
     }
 }
-
 void AnySpace1::print_sensor_data()
 {
     Serial.print("Pitch: ");

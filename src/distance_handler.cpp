@@ -34,7 +34,8 @@ std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data(Adafruit_VL53L0X &lox1,
         else
         {
             // Use a special value (like 0 or max uint16_t) to indicate an error or "out of range"
-            sensor_data[i] = 0;
+            // sensor_data[i] = 0;
+            sensor_data[i] = 8190; // 8190 is the max range for VL53L0X
         }
     }
     return sensor_data;

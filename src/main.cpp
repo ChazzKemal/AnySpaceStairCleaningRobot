@@ -89,7 +89,7 @@ void loop()
   //  delay(1000);
   //  wheel1->drive->moveToPosition(-300);
   //  delay(1000);
-  cleaning_robot.get_sensor_data();
-  cleaning_robot.print_sensor_data();
+  // cleaning_robot.get_sensor_data();
+  // cleaning_robot.print_sensor_data();
   cleaning_robot.run();
 }
