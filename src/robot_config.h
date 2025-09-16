@@ -50,35 +50,35 @@ enum Wheel
 
 // --- Front Left Wheel Pins ---
 #define FL_DRIVE_STEP_PIN 5
-#define FL_DRIVE_DIR_PIN 4
-#define FL_STEER_STEP_PIN 7
-#define FL_STEER_DIR_PIN 6
-#define FL_HEIGHT_STEP_PIN 18
-#define FL_HEIGHT_DIR_PIN 17
+#define FL_DRIVE_DIR_PIN 37
+#define FL_STEER_STEP_PIN 36
+#define FL_STEER_DIR_PIN 4
+#define FL_HEIGHT_STEP_PIN 46
+#define FL_HEIGHT_DIR_PIN 3
 
 // --- Front Right Wheel Pins ---
-#define FR_DRIVE_STEP_PIN 46
-#define FR_DRIVE_DIR_PIN 3
-#define FR_STEER_STEP_PIN 10
-#define FR_STEER_DIR_PIN 11
-#define FR_HEIGHT_STEP_PIN 13
-#define FR_HEIGHT_DIR_PIN 14
+#define FR_DRIVE_STEP_PIN 38
+#define FR_DRIVE_DIR_PIN 39
+#define FR_STEER_STEP_PIN 7
+#define FR_STEER_DIR_PIN 6
+#define FR_HEIGHT_STEP_PIN 11
+#define FR_HEIGHT_DIR_PIN 10
 
 // --- Rear Left Wheel Pins ---
-#define RL_DRIVE_STEP_PIN 21
-#define RL_DRIVE_DIR_PIN 22
-#define RL_STEER_STEP_PIN 23
-#define RL_STEER_DIR_PIN 25
-#define RL_HEIGHT_STEP_PIN 26
-#define RL_HEIGHT_DIR_PIN 27
+#define RL_DRIVE_STEP_PIN 40
+#define RL_DRIVE_DIR_PIN 41
+#define RL_STEER_STEP_PIN 16
+#define RL_STEER_DIR_PIN 15
+#define RL_HEIGHT_STEP_PIN 13
+#define RL_HEIGHT_DIR_PIN 12
 
 // --- Rear Right Wheel Pins ---
-#define RR_DRIVE_STEP_PIN 33
-#define RR_DRIVE_DIR_PIN 34
-#define RR_STEER_STEP_PIN 35
-#define RR_STEER_DIR_PIN 36
-#define RR_HEIGHT_STEP_PIN 37
-#define RR_HEIGHT_DIR_PIN 38
+#define RR_DRIVE_STEP_PIN 42
+#define RR_DRIVE_DIR_PIN 2
+#define RR_STEER_STEP_PIN 18
+#define RR_STEER_DIR_PIN 17
+#define RR_HEIGHT_STEP_PIN 1
+#define RR_HEIGHT_DIR_PIN 14
 
 // --- Front-Left Wheel ---
 #define FL_INVERT_DRIVE false
