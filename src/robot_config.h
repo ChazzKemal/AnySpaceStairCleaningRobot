@@ -34,11 +34,11 @@ enum Wheel
 
 // --- Pin Definitions ---
 
-// --- HOMING SWITCH PINS ---
-#define FL_HOME_PIN 21 // Example pin
-// #define FR_HOME_PIN
-// #define RL_HOME_PIN 99
-// #define RR_HOME_PIN 99
+// --- channels of the adc necessary for homing ---
+#define FL_HOME_PIN 0 // 
+#define FR_HOME_PIN 1
+#define RL_HOME_PIN 2
+#define RR_HOME_PIN 3
 
 // --- Front Left Wheel Pins ---
 #define FL_DRIVE_STEP_PIN 5
@@ -96,5 +96,12 @@ enum Wheel
 #define CONVERSION_FACTOR_DRIVE 1  // Example: 0.1 mm per step
 #define CONVERSION_FACTOR_STEER 1  // Example: 0.
 #define CONVERSION_FACTOR_HEIGHT 1 // Example: 0.1 mm per step
+
+
+// ----------------------  Vacuum stuff
+#define VACUUM_PIN 35
+#define BRIZZLES_PIN 0 
+
+
 
 #endif // ROBOT_CONFIG_H
