@@ -84,7 +84,7 @@ void AnySpace1::home()
             {
                 if (wheels[i]->checkHomingPin() && !wheels[i]->height->_stepper->isRunning())
                 {
-                    // wheels[i]->steer->_stepper->forceStopAndNewPosition(0);
+                    wheels[i]->steer->_stepper->forceStopAndNewPosition(0);
                     Serial.print("Wheel steer ");
                     Serial.print(i);
                     Serial.println(" is home.");
