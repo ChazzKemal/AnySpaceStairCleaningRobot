@@ -33,6 +33,8 @@ public:
     // get data from vl53l0x sensors TODO: maybe 8 bit?
     std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data();
     void print_sensor_data();
+    void go_initial_state();
+    void align_with_wall();
     void home();
 
 private:

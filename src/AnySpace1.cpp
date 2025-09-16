@@ -174,6 +174,8 @@ void AnySpace1::run()
     // AnySpace1::print_sensor_data();
 
     wheels[0]->drive->moveToPosition(300);
+    get_sensor_data();
+    print_sensor_data();
     delay(2000);
     wheels[0]->drive->moveToPosition(-300);
     delay(2000);
@@ -203,6 +205,52 @@ void AnySpace1::run()
     // delay(500);
     // go_vertically(200);
     // delay(500);
+}
+
+void AnySpace1::go_initial_state()
+{
+    for (auto &wheel : wheels)
+    {
+        wheel->steer->moveToPosition(INITIAL_HEIGHT);
+        wheel->height->moveToPosition(INITIAL_STEER_ANGLE);
+    }
+}
+
+void AnySpace1::align_with_wall()
+{
+    bool left_stopped = false;
+    bool right_stopped = false;
+    for (auto &wheel : wheels)
+    {
+        wheel->drive->_stepper->runForward();
+    }
+    while (true)
+    {
+        get_sensor_data();
+        float left_distance = this->sensor_data[STAIR_WALL1];
+        float right_distance = this->sensor_data[STAIR_WALL2];
+
+        if (left_distance < DISTANCE_TO_WALL && !left_stopped)
+        {
+            wheels[0]->drive->_stepper->forceStop();
+            wheels[2]->drive->_stepper->forceStop();
+            left_stopped = true;
+            if (right_stopped)
+            {
+                break;
+            }
+        }
+        if (right_distance < DISTANCE_TO_WALL && !right_stopped)
+        {
+            wheels[1]->drive->_stepper->forceStop();
+            wheels[3]->drive->_stepper->forceStop();
+            right_stopped = true;
+            if (left_stopped)
+            {
+                break;
+            }
+        }
+    }
 }
 
 void AnySpace1::print_sensor_data()

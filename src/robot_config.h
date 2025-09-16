@@ -32,6 +32,13 @@ enum Wheel
 #define ACCEL_STEER 1000.0
 #define ACCEL_HEIGHT 1000.0
 
+// Initial State
+#define INITIAL_HEIGHT 20.0
+#define INITIAL_STEER_ANGLE 20.0
+
+// Algorithm parameters
+#define DISTANCE_TO_WALL 200.0 // in mm
+
 // --- Pin Definitions ---
 
 // --- HOMING SWITCH PINS ---
