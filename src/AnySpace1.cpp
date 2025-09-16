@@ -125,7 +125,7 @@ void AnySpace1::go_vertically(float n_steps)
         wheel.height->moveSteps(n_steps);
     }
 }
-void AnySpace1::turn_wheel(float n_steps)
+void AnySpace1::steer_wheel(float n_steps)
 {
     for (auto &wheel : wheels)
     {
@@ -177,7 +177,7 @@ void AnySpace1::run()
         delay(500);
         stop();
         delay(1000);
-        turn_wheel(200);
+        steer_wheel(200);
         delay(500);
         go_vertically(200);
         delay(500);

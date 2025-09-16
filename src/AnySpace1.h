@@ -25,7 +25,7 @@ public:
     // for height direction. Could be positive could be negative
     void go_vertically(float n_steps);
     // for steering direction. Could be positive could be negative
-    void turn_wheel(float n_steps);
+    void steer_wheel(float n_steps);
     // get data from all sensors
     void get_sensor_data();
     // get data from mpu6050
