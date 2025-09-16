@@ -49,13 +49,12 @@ enum Wheel
 #define FL_HEIGHT_DIR_PIN 17
 
 // --- Front Right Wheel Pins ---
-#define FR_DRIVE_STEP_PIN 12
-#define FR_DRIVE_DIR_PIN 13
-#define FR_STEER_STEP_PIN 14
-// #define FR_STEER_DIR_PIN 15
-// #define FR_HEIGHT_STEP_PIN 16
-
-// #define FR_HEIGHT_DIR_PIN 17
+#define FR_DRIVE_STEP_PIN 46
+#define FR_DRIVE_DIR_PIN 3
+#define FR_STEER_STEP_PIN 10
+#define FR_STEER_DIR_PIN 11
+#define FR_HEIGHT_STEP_PIN 13
+#define FR_HEIGHT_DIR_PIN 14
 
 // --- Rear Left Wheel Pins ---
 #define RL_DRIVE_STEP_PIN 21

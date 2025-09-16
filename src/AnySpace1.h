@@ -40,7 +40,8 @@ private:
     FastAccelStepperEngine *m_engine = new FastAccelStepperEngine();
     std::array<ArticulatedWheel *, NUM_WHEELS> wheels; // Changed to array of pointers
     // std::array<ArticulatedWheel, NUM_WHEELS> wheels;
-    std::array<Adafruit_VL53L0X, NUM_SENSORS> distance_sensors;
+    Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
+    // std::array<Adafruit_VL53L0X, NUM_SENSORS> distance_sensors;
     std::array<uint16_t, NUM_SENSORS> sensor_data;
     float pitch = 0.0f;
     float roll = 0.0f;

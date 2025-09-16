@@ -6,9 +6,8 @@
 std::array<uint16_t, NUM_SENSORS> AnySpace1::get_vl53l0x_data()
 {
     // Call the handler function and pass our private sensor array to it.
-    return ::get_vl53l0x_data(this->distance_sensors, this->sensor_data);
+    return ::get_vl53l0x_data(this->lox1, this->sensor_data);
 }
-
 std::tuple<float, float> AnySpace1::get_mpu_data()
 {
     return get_angles(this->mpu);
@@ -19,7 +18,17 @@ void AnySpace1::begin()
     Serial.begin(115200);
     Wire.begin();
     mpu.begin();
+    for (int i = 0; i < NUM_SENSORS; ++i)
+    {
+        tca_select(i);
+        if (!lox1.begin())
+        {
+            Serial.print("Failed to boot VL53L0X on channel ");
+            Serial.println(i);
+        }
+    }
     wheels[0]->begin();
+    wheels[1]->begin();
     // for (auto &wheel : wheels)
     // {
     //     wheel->begin();
@@ -28,21 +37,21 @@ void AnySpace1::begin()
 }
 
 AnySpace1::AnySpace1()
-    : // Initialize the engine object
-      distance_sensors{
-          // The order here MUST match the 'Sensor' enum
-          Adafruit_VL53L0X(), // FRONT_LEFT
-          Adafruit_VL53L0X(), // FRONT_RIGHT
-          Adafruit_VL53L0X(), // REAR_LEFT
-          Adafruit_VL53L0X()  // REAR_RIGHT
-      }
+// TODO: decide on if to keep these or not
+//  : distance_sensors{
+//        Adafruit_VL53L0X(),
+//        Adafruit_VL53L0X(),
+//        Adafruit_VL53L0X(),
+//        Adafruit_VL53L0X(),
+//        Adafruit_VL53L0X()}
 
 {
     m_engine->init(); // Call init() first.
-
+    // distance_sensors[0] = new Adafruit_VL53L0X();
+    // distance_sensors[1] = new Adafruit_VL53L0X();
     // Now, create the wheels.
     wheels[0] = new ArticulatedWheel(m_engine, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN, FL_INVERT_DRIVE, FL_INVERT_STEER, FL_INVERT_HEIGHT);
-    // wheels[1] = new ArticulatedWheel(m_engine, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FL_HOME_PIN, FR_INVERT_DRIVE, FR_INVERT_STEER, FR_INVERT_HEIGHT);
+    wheels[1] = new ArticulatedWheel(m_engine, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FL_HOME_PIN, FR_INVERT_DRIVE, FR_INVERT_STEER, FR_INVERT_HEIGHT);
     // wheels[2] = new ArticulatedWheel(m_engine, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, FL_HOME_PIN, RL_INVERT_DRIVE, RL_INVERT_STEER, RL_INVERT_HEIGHT);
     // wheels[3] = new ArticulatedWheel(m_engine, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, FL_HOME_PIN, RR_INVERT_DRIVE, RR_INVERT_STEER, RR_INVERT_HEIGHT);
 }
@@ -168,18 +177,23 @@ void AnySpace1::run()
     delay(2000);
     wheels[0]->drive->moveToPosition(-300);
     delay(2000);
-    wheels[0]->height->moveToPosition(300);
+    // wheels[0]->height->moveToPosition(300);
+    // delay(2000);
+    // wheels[0]->height->moveToPosition(-300);
+    // delay(2000);
+    // wheels[0]->steer->moveToPosition(300);
+    // delay(2000);
+    // wheels[0]->steer->moveToPosition(-300);
+    // delay(2000);
+    wheels[1]->drive->moveToPosition(300);
     delay(2000);
-    wheels[0]->height->moveToPosition(-300);
+    wheels[1]->drive->moveToPosition(-300);
     delay(2000);
-    wheels[0]->steer->moveToPosition(300);
-    delay(2000);
-    wheels[0]->steer->moveToPosition(-300);
-    delay(2000);
-    wheels[0]->steer->moveToPosition(0);
-    wheels[0]->height->moveToPosition(0);
-    wheels[0]->drive->moveToPosition(0);
-    delay(2000);
+    // wheels[1]->drive->moveToPosition(0);
+    // wheels[0]->steer->moveToPosition(0);
+    // wheels[0]->height->moveToPosition(0);
+    // wheels[0]->drive->moveToPosition(0);
+    // delay(2000);
     // stop();
     // run_backward();
     // delay(500);

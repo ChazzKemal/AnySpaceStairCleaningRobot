@@ -12,7 +12,7 @@ void tca_select(uint8_t channel)
     Wire.write(1 << channel);
     Wire.endTransmission();
 }
-std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data(std::array<Adafruit_VL53L0X, NUM_SENSORS> &distance_sensors,
+std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data(Adafruit_VL53L0X &lox1,
                                                    std::array<uint16_t, NUM_SENSORS> &sensor_data)
 {
     // The function assumes Wire.begin() because there is a sensors class
@@ -24,7 +24,7 @@ std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data(std::array<Adafruit_VL53L0X, 
         tca_select(i);
 
         // Take a reading from the sensor in the array
-        distance_sensors[i].rangingTest(&measure, false);
+        lox1.rangingTest(&measure, false);
 
         // Check if the reading was valid
         if (measure.RangeStatus != 4)
