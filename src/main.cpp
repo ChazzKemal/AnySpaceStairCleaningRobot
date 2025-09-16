@@ -7,26 +7,27 @@
 #include <Adafruit_VL53L0X.h>
 #include <Wire.h>
 #include <FastAccelStepper.h>
+#include <AnySpace1.h>
 // Adafruit_MPU6050 mpu; // for esp32-s3-n16r8 sda 8, scl 9 pin, sda 21,scl 22 for esp32
 //  float pitch = 0.0, roll = 0.0;
 //  // float alpha = 0; // complementary filter constant
 //  unsigned long lastTime;
-#define TCAADDR 0x70
+// #define TCAADDR 0x70
 
 // Create two sensor objects
-Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
-Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
+// Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
+// Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
 
 // Helper function to select the I2C channel on the multiplexer
-void tca_select(uint8_t channel)
-{
-  if (channel > 7)
-    return;
+// void tca_select(uint8_t channel)
+// {
+//   if (channel > 7)
+//     return;
 
-  Wire.beginTransmission(TCAADDR);
-  Wire.write(1 << channel);
-  Wire.endTransmission();
-}
+//   Wire.beginTransmission(TCAADDR);
+//   Wire.write(1 << channel);
+//   Wire.endTransmission();
+// }
 
 // #define drive_step_pin 14
 // #define drive_dir_pin 12
@@ -117,40 +118,41 @@ void tca_select(uint8_t channel)
 //   lox.startRangeContinuous(1000);
 // }
 
-unsigned long lastReadingTime = 0;
-const long readingInterval = 2000; // Read the sensor every 100 milliseconds (10 times/sec)
+// unsigned long lastReadingTime = 0;
+// const long readingInterval = 2000; // Read the sensor every 100 milliseconds (10 times/sec)
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial)
-  {
-    delay(1); // Wait for serial port to connect
-  }
-  Serial.println("Dual VL53L0X Test with TCA9548A Multiplexer");
+  AnySpace1 cleaning_robot;
+  // Serial.begin(115200);
+  // while (!Serial)
+  // {
+  //   delay(1); // Wait for serial port to connect
+  // }
+  // Serial.println("Dual VL53L0X Test with TCA9548A Multiplexer");
 
-  // Initialize I2C bus
-  Wire.begin();
+  // // Initialize I2C bus
+  // Wire.begin();
 
-  // --- Initialize Sensor 1 on Channel 0 ---
-  tca_select(0);
-  if (!lox1.begin())
-  {
-    Serial.println(F("Failed to boot VL53L0X on channel 0"));
-    while (1)
-      ;
-  }
-  Serial.println(F("VL53L0X 1 booted on channel 0"));
+  // // --- Initialize Sensor 1 on Channel 0 ---
+  // tca_select(0);
+  // if (!lox1.begin())
+  // {
+  //   Serial.println(F("Failed to boot VL53L0X on channel 0"));
+  //   while (1)
+  //     ;
+  // }
+  // Serial.println(F("VL53L0X 1 booted on channel 0"));
 
-  // --- Initialize Sensor 2 on Channel 1 ---
-  tca_select(1);
-  if (!lox2.begin())
-  {
-    Serial.println(F("Failed to boot VL53L0X on channel 1"));
-    while (1)
-      ;
-  }
-  Serial.println(F("VL53L0X 2 booted on channel 1"));
+  // // --- Initialize Sensor 2 on Channel 1 ---
+  // tca_select(1);
+  // if (!lox2.begin())
+  // {
+  //   Serial.println(F("Failed to boot VL53L0X on channel 1"));
+  //   while (1)
+  //     ;
+  // }
+  // Serial.println(F("VL53L0X 2 booted on channel 1"));
   // delay(1000);
   // engine.init();
   // Serial.begin(115200);
@@ -212,38 +214,39 @@ void setup()
 
 void loop()
 {
-  VL53L0X_RangingMeasurementData_t measure;
 
-  // --- Read from Sensor 1 ---
-  tca_select(0);
-  lox1.rangingTest(&measure, false); // false = not in debug mode
+  // VL53L0X_RangingMeasurementData_t measure;
 
-  if (measure.RangeStatus != 4)
-  { // phase failures have incorrect data
-    Serial.print("Sensor 1 Distance (mm): ");
-    Serial.println(measure.RangeMilliMeter);
-  }
-  else
-  {
-    Serial.println("Sensor 1 out of range");
-  }
+  // // --- Read from Sensor 1 ---
+  // tca_select(0);
+  // lox1.rangingTest(&measure, false); // false = not in debug mode
 
-  // --- Read from Sensor 2 ---
-  tca_select(1);
-  lox2.rangingTest(&measure, false);
+  // if (measure.RangeStatus != 4)
+  // { // phase failures have incorrect data
+  //   Serial.print("Sensor 1 Distance (mm): ");
+  //   Serial.println(measure.RangeMilliMeter);
+  // }
+  // else
+  // {
+  //   Serial.println("Sensor 1 out of range");
+  // }
 
-  if (measure.RangeStatus != 4)
-  {
-    Serial.print("Sensor 2 Distance (mm): ");
-    Serial.println(measure.RangeMilliMeter);
-  }
-  else
-  {
-    Serial.println("Sensor 2 out of range");
-  }
+  // // --- Read from Sensor 2 ---
+  // tca_select(1);
+  // lox2.rangingTest(&measure, false);
 
-  Serial.println("--------------------");
-  delay(500); // Wait half a second between measurement sets
+  // if (measure.RangeStatus != 4)
+  // {
+  //   Serial.print("Sensor 2 Distance (mm): ");
+  //   Serial.println(measure.RangeMilliMeter);
+  // }
+  // else
+  // {
+  //   Serial.println("Sensor 2 out of range");
+  // }
+
+  // Serial.println("--------------------");
+  // delay(500); // Wait half a second between measurement sets
   // Serial.println("Running forward...");
   // m_drive->runForward(); // Start running forward
   // delay(2000);           // Wait for 2 seconds

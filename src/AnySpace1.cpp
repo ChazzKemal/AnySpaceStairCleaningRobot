@@ -61,8 +61,6 @@ void AnySpace1::home()
         wheel.height->_stepper->runForward();
     }
 
-    const uint8_t home_pins[] = {FL_HOME_PIN, FR_HOME_PIN, RL_HOME_PIN, RR_HOME_PIN};
-
     bool all_homed = false;
     int homed_wheels = 0;
     while (!all_homed)
@@ -73,7 +71,7 @@ void AnySpace1::home()
             if (height_seek[i])
             {
                 // Read the limit switch.
-                if (digitalRead(home_pins[i]) == HIGH)
+                if (wheels[i].checkHomingPin())
                 {
                     // The switch is pressed! Stop the motor and reset its position to 0.
                     wheels[i].height->_stepper->forceStopAndNewPosition(0);
@@ -88,7 +86,7 @@ void AnySpace1::home()
             }
             if (steer_seek[i])
             {
-                if (digitalRead(home_pins[i]) == HIGH)
+                if (wheels[i].checkHomingPin())
                 {
                     wheels[i].steer->_stepper->forceStopAndNewPosition(0);
                     Serial.print("Wheel steer ");
