@@ -1,7 +1,7 @@
 #ifndef ARTICULATED_WHEEL_H
 #define ARTICULATED_WHEEL_H
 
-#include <AccelStepper.h>
+#include <FastAccelStepper.h>
 
 /**
  * @class ArticulatedWheel
@@ -10,6 +10,26 @@
  * This class encapsulates the creation and control of the three stepper motors
  * for a single wheel unit (drive, steer, and height).
  */
+
+class Stepper
+{
+public:
+    Stepper(FastAccelStepperEngine *engine, uint8_t drive_step_pin, uint8_t drive_dir_pin, bool invert);
+    void init(float speed, float acceleration, float conversionFactor);
+    float position; // this is the real world position so e.g. mm or degrees
+    bool invertDir;
+    float default_Speed;
+    float default_acceleration;
+    int convertToSteps(float realWorldValue);
+    FastAccelStepper *_stepper;
+    void moveSteps(int steps);
+    void moveToPosition(float pos);
+    void moveRelative(float relPos);
+
+private:
+    float conversionFactor;
+};
+
 class ArticulatedWheel
 {
 public:
@@ -25,10 +45,15 @@ public:
      * @param invert_drive Set to true to reverse the drive motor's direction.
      * @param invert_steer Set to true to reverse the steer motor's direction.
      * @param invert_height Set to true to reverse the height motor's direction.
+     *
      */
-    ArticulatedWheel(uint8_t drive_step_pin, uint8_t drive_dir_pin,
+    Stepper *drive;
+    Stepper *steer;
+    Stepper *height;
+
+    ArticulatedWheel(FastAccelStepperEngine *engine, uint8_t drive_step_pin, uint8_t drive_dir_pin,
                      uint8_t steer_step_pin, uint8_t steer_dir_pin,
-                     uint8_t height_step_pin, uint8_t height_dir_pin,
+                     uint8_t height_step_pin, uint8_t height_dir_pin, uint8_t _homingPin,
                      bool invert_drive = false, bool invert_steer = false, bool invert_height = false);
 
     /**
@@ -42,43 +67,16 @@ public:
                float acceleration_steer = 2000,
                float acceleration_height = 2000);
 
-    // --- Low-Level Control for This Wheel ---
-
-    /**
-     * @brief Sets the rolling speed of the wheel.
-     * @param speed Speed in steps/sec (positive is forward, negative is backward).
-     */
-    void setDriveSpeed(float speed);
-    void setHeightSpeed(float speed);
-    void setAngleSpeed(float speed);
-
-    /**
-     * @brief Sets the steering angle of the wheel assembly.
-     * @param angle_degrees Target angle in degrees.
-     */
-    void setSteerAngle(long angle_degrees);
-
-    /**
-     * @brief Sets the vertical position (height) of the wheel.
-     * @param position Target height in steps.
-     */
-    void setHeight(long position);
-
-    /**
-     * @brief Must be called continuously to update all three motors.
-     */
-    void run();
+    bool checkHomingPin();
 
 private:
     // The AccelStepper objects are now members of the class, not references.
-    AccelStepper m_drive;
-    AccelStepper m_steer;
-    AccelStepper m_height;
 
     // Direction multipliers (-1 for inverted, 1 for normal)
     int m_drive_direction;
     int m_steer_direction;
     int m_height_direction;
+    uint8_t homingPin;
 };
 
 #endif // ARTICULATED_WHEEL_H
