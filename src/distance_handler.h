@@ -7,7 +7,7 @@
 
 void tca_select(uint8_t channel);
 
-std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data(Adafruit_VL53L0X &sensors,
-                                                   std::array<uint16_t, NUM_SENSORS> &sensor_data);
+std::array<float, NUM_SENSORS> get_vl53l0x_data(Adafruit_VL53L0X &sensors,
+                                                std::array<float, NUM_SENSORS> &sensor_data);
 
 #endif // DISTANCE_HANDLER_H

@@ -33,7 +33,7 @@ public:
     // get data from mpu6050
     std::tuple<float, float> get_mpu_data();
     // get data from vl53l0x sensors TODO: maybe 8 bit?
-    std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data();
+    std::array<float, NUM_SENSORS> get_vl53l0x_data();
     void print_sensor_data();
     void go_initial_state();
     void alignWithWall();
@@ -42,6 +42,7 @@ public:
     void raiseBodyToNextStair();
     void shiftWeightForwardOntoStair();
     void retractRearWheels();
+    
     void home();
 
 private:
@@ -52,7 +53,7 @@ private:
     // std::array<ArticulatedWheel, NUM_WHEELS> wheels;
     Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
     // std::array<Adafruit_VL53L0X, NUM_SENSORS> distance_sensors;
-    std::array<uint16_t, NUM_SENSORS> sensor_data;
+    std::array<float, NUM_SENSORS> sensor_data;
     float pitch = 0.0f;
     float roll = 0.0f;
 };

@@ -23,7 +23,7 @@ enum Wheel
 };
 
 // --- Max Speed (steps/sec) ---
-#define MAX_DRIVE_SPEED 100.0
+#define MAX_DRIVE_SPEED 200.0
 #define MAX_STEER_SPEED 100.0
 #define MAX_HEIGHT_SPEED 100.0
 
@@ -38,13 +38,15 @@ enum Wheel
 
 // Algorithm parameters
 #define DISTANCE_TO_WALL 200.0 // in mm
-#define ALIGN_THRESHOLD 50.0
-#define CLIMBABLE_DISTANCE_TO_WALL 40.0            // in mm
-#define OVERCLIMB_HEIGHT 20.0                      // in mm
-#define MAX_HEIGHT 100.0                           // in mm
-#define NEXT_STAIR_DISTANCE 100.0                  // in mm
-#define SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS 20.0 // in mm
-#define SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS 50.0  // in mm
+#define ALIGN_THRESHOLD 5.0
+#define CLIMBABLE_DISTANCE_TO_WALL 20.0                // in mm
+#define OVERCLIMB_HEIGHT 6.5                           // in mm
+#define MAX_HEIGHT 17.5                                // in mm
+#define NEXT_STAIR_DISTANCE 15.0                       // in mm
+#define SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS 100.0    // in mm
+#define SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS 50.0      // in mm
+#define SAFE_SENSOR_READING_TO_EXTRACT_FRONT_WHEELS 26 // in mm
+#define SENSOR_CORRECTION 12.143
 
 // --- Pin Definitions ---
 
@@ -106,9 +108,9 @@ enum Wheel
 #define RR_INVERT_STEER true
 #define RR_INVERT_HEIGHT false
 
-#define CONVERSION_FACTOR_DRIVE 1  // Example: 0.1 mm per step
-#define CONVERSION_FACTOR_STEER 1  // Example: 0.
-#define CONVERSION_FACTOR_HEIGHT 1 // Example: 0.1 mm per step
+#define CONVERSION_FACTOR_DRIVE 1      // Example: 0.1 mm per step
+#define CONVERSION_FACTOR_STEER 1      // Example: 0.
+#define CONVERSION_FACTOR_HEIGHT 36.76 // Example: 0.1 mm per step
 
 #define FL_HAS_DRIVE true
 #define FL_HAS_STEER true

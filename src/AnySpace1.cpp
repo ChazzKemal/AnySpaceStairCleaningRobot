@@ -4,7 +4,7 @@
 #include "ArticulatedWheel.h"
 #include "mpu_handler.h"
 
-std::array<uint16_t, NUM_SENSORS> AnySpace1::get_vl53l0x_data()
+std::array<float, NUM_SENSORS> AnySpace1::get_vl53l0x_data()
 {
     // Call the handler function and pass our private sensor array to it.
     return ::get_vl53l0x_data(this->lox1, this->sensor_data);
@@ -303,15 +303,15 @@ void AnySpace1::alignWithWall()
         print_sensor_data();
         float left_distance = this->sensor_data[STAIR_WALL1];
         float right_distance = this->sensor_data[STAIR_WALL2];
-
-        float diff = fabs(left_distance - right_distance);
+        float diff = left_distance - right_distance;
+        float abs_diff = fabs(diff);
 
         // Serial.print("Align Distance: ");
         // Serial.println(diff);
         // If left already stopped, keep right running and check difference
         if (left_stopped && !right_stopped)
         {
-            if (diff < ALIGN_THRESHOLD)
+            if (abs_diff < ALIGN_THRESHOLD)
             {
                 wheels[FRONT_LEFT]->drive->_stepper->forceStop();
                 wheels[FRONT_RIGHT]->drive->_stepper->forceStop();
@@ -324,7 +324,7 @@ void AnySpace1::alignWithWall()
         // If right already stopped, keep left running and check difference
         else if (right_stopped && !left_stopped)
         {
-            if (diff < ALIGN_THRESHOLD)
+            if (abs_diff < ALIGN_THRESHOLD)
             {
                 wheels[FRONT_LEFT]->drive->_stepper->forceStop();
                 wheels[FRONT_RIGHT]->drive->_stepper->forceStop();
@@ -337,7 +337,7 @@ void AnySpace1::alignWithWall()
         else
         {
             // Neither side stopped yet → check if one reaches initial wall threshold
-            if (diff < 0 && !left_stopped)
+            if (diff > 0 && !left_stopped)
             {
                 if (left_distance < DISTANCE_TO_WALL)
                 {
@@ -348,7 +348,7 @@ void AnySpace1::alignWithWall()
             }
 
             // Right side closer → check only right
-            else if (diff > 0 && !right_stopped)
+            else if (diff < 0 && !right_stopped)
             {
                 if (right_distance < DISTANCE_TO_WALL)
                 {
@@ -378,9 +378,9 @@ void AnySpace1::print_sensor_data()
 void AnySpace1::climb_stairs()
 {
     Serial.println("Climbing stairs...");
-    alignWithWall();
-    approachStairs();
-    //  raiseBodyToNextStair();
+    // alignWithWall();
+    // approachStairs();
+    raiseBodyToNextStair();
     //  shiftWeightForwardOntoStair();
     //  retractRearWheels();
     Serial.println("Finished climbing one stair.");
@@ -421,6 +421,7 @@ void AnySpace1::raiseBodyToNextStair()
     while (true)
     {
         get_sensor_data();
+        print_sensor_data();
         distance_reading = 0.5 * distance_reading + 0.5 * sensor_data[FRONT_LEFT];
         if (distance_reading > initial_distance_reading + NEXT_STAIR_DISTANCE)
         {
@@ -428,12 +429,30 @@ void AnySpace1::raiseBodyToNextStair()
             Serial.println("Body raised to next stair.");
             delay(20); // To make sure the motors have completely stopped
             go_vertically(OVERCLIMB_HEIGHT);
-            go_n_steps(SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS);
-            wheels[0]->height->moveToPosition(0);
-            wheels[1]->height->moveToPosition(0);
-            go_n_steps(SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS);
-            wheels[2]->height->moveToPosition(0);
-            wheels[3]->height->moveToPosition(0);
+            while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning() || wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
+            {
+                Serial.println("Overclimbing...");
+                delay(10);
+            }
+            run_forward();
+            while (true)
+            {
+                get_sensor_data();
+                print_sensor_data();
+                if (sensor_data[FRONT_LEFT] < SAFE_SENSOR_READING_TO_EXTRACT_FRONT_WHEELS)
+                {
+                    stop();
+                    Serial.println("Front wheels on stair.");
+                    break;
+                }
+            }
+
+            // go_n_steps(SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS);
+            wheels[0]->height->_stepper->moveTo(0);
+            wheels[1]->height->_stepper->moveTo(0);
+            //  go_n_steps(SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS);
+            //  wheels[2]->height->moveToPosition(0);
+            //  wheels[3]->height->moveToPosition(0);
             break;
         }
     }

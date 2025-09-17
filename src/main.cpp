@@ -66,7 +66,7 @@ void setup()
     //   cleaning_robot.go_vertically(30);
     //   delay(500);
     // vacUnit = new Vacuum();
-    cleaning_robot.go_initial_state();
+    // cleaning_robot.go_initial_state();
     cleaning_robot.climb_stairs();
 
     // m_drive = engine.stepperConnectToPin(FL_DRIVE_STEP_PIN);

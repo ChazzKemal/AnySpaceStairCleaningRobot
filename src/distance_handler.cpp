@@ -1,6 +1,7 @@
 #include "distance_handler.h"
 #include <Wire.h>
 #include <Adafruit_VL53L0X.h>
+#include "robot_config.h"
 
 #define TCAADDR 0x70
 void tca_select(uint8_t channel)
@@ -12,8 +13,8 @@ void tca_select(uint8_t channel)
     Wire.write(1 << channel);
     Wire.endTransmission();
 }
-std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data(Adafruit_VL53L0X &lox1,
-                                                   std::array<uint16_t, NUM_SENSORS> &sensor_data)
+std::array<float, NUM_SENSORS> get_vl53l0x_data(Adafruit_VL53L0X &lox1,
+                                                std::array<float, NUM_SENSORS> &sensor_data)
 {
     // The function assumes Wire.begin() because there is a sensors class
 
@@ -29,13 +30,13 @@ std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data(Adafruit_VL53L0X &lox1,
         // Check if the reading was valid
         if (measure.RangeStatus != 4)
         {
-            sensor_data[i] = measure.RangeMilliMeter;
+            sensor_data[i] = measure.RangeMilliMeter / SENSOR_CORRECTION;
         }
         else
         {
             // Use a special value (like 0 or max uint16_t) to indicate an error or "out of range"
             // sensor_data[i] = 0;
-            sensor_data[i] = 8190; // 8190 is the max range for VL53L0X
+            sensor_data[i] = 8190.0; // 8190 is the max range for VL53L0X
         }
     }
     return sensor_data;
