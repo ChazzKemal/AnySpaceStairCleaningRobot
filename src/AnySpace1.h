@@ -42,7 +42,12 @@ public:
     void raiseBodyToNextStair();
     void shiftWeightForwardOntoStair();
     void retractRearWheels();
-    
+    void retractFrontWheels(float factor);
+    void shiftCompleteWeightToStair();
+    void cleanStairs();
+    void cleanLeftPart();
+    void cleanRightPart();
+
     void home();
 
 private:

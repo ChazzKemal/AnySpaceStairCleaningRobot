@@ -255,7 +255,7 @@ void AnySpace1::go_initial_state()
         {
             wheels[i]->steer->moveToPosition(INITIAL_STEER_ANGLE);
         }
-        wheels[i]->height->moveToPosition(INITIAL_HEIGHT);
+        // wheels[i]->height->moveToPosition(INITIAL_HEIGHT);
     }
 
     bool motors_running;
@@ -381,11 +381,59 @@ void AnySpace1::climb_stairs()
     // alignWithWall();
     // approachStairs();
     raiseBodyToNextStair();
-    //  shiftWeightForwardOntoStair();
-    //  retractRearWheels();
+    shiftWeightForwardOntoStair();
+    retractFrontWheels(-0.4 * 36.76);
+    shiftCompleteWeightToStair();
+    retractRearWheels();
+    retractFrontWheels(0.4 * 36.76);
+    approachStairs();
     Serial.println("Finished climbing one stair.");
 }
 
+void AnySpace1::retractFrontWheels(float factor)
+{
+    wheels[0]->height->_stepper->moveTo(factor); //(-0.9 * CONVERSION_FACTOR_HEIGHT);
+    wheels[1]->height->_stepper->moveTo(factor); //(-0.9 * CONVERSION_FACTOR_HEIGHT);
+
+    while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning())
+    {
+        Serial.println("Retracting front wheels...");
+        delay(10);
+    }
+    Serial.println("Front wheels retracted.");
+}
+void AnySpace1::shiftWeightForwardOntoStair()
+{
+
+    run_forward();
+    while (true)
+    {
+        get_sensor_data();
+        print_sensor_data();
+        if (sensor_data[FRONT_LEFT] < SAFE_SENSOR_READING_TO_EXTRACT_FRONT_WHEELS)
+        {
+            stop();
+            Serial.println("Front wheels on stair.");
+            break;
+        }
+    }
+    wheels[2]->height->moveRelative(3);
+    wheels[3]->height->moveRelative(3);
+    while (wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
+    {
+        Serial.println("Shifting complete weight to stair...");
+        delay(10);
+    }
+    wheels[0]->drive->moveRelative(75);
+    wheels[1]->drive->moveRelative(75);
+
+    while (wheels[1]->drive->_stepper->isRunning() || wheels[0]->drive->_stepper->isRunning())
+    {
+        Serial.println("Shifting complete weight to stair...");
+        delay(10);
+    }
+    Serial.println("Shifted weight forward onto stair.");
+}
 void AnySpace1::approachStairs()
 {
     Serial.println("Approaching stairs...");
@@ -411,6 +459,34 @@ void AnySpace1::stopHeightMotors()
         wheel->height->_stepper->forceStop();
     }
 }
+void AnySpace1::shiftCompleteWeightToStair()
+{
+    run_forward();
+    while (true)
+    {
+        get_sensor_data();
+        print_sensor_data();
+        if (sensor_data[FRONT_LEFT] < SAFE_SENSOR_READING_TO_EXTRACT_REAR_WHEELS)
+        {
+            stop();
+            Serial.println("Safe to extract rear wheels.");
+            break;
+        }
+    }
+}
+
+void AnySpace1::retractRearWheels()
+{
+    wheels[2]->height->_stepper->moveTo(0.6 * 36.76); //(-0.8 * CONVERSION_FACTOR_HEIGHT);
+    wheels[3]->height->_stepper->moveTo(0.6 * 36.76); //(-0.8 * CONVERSION_FACTOR_HEIGHT);
+
+    while (wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
+    {
+        Serial.println("Retracting rear wheels...");
+        delay(10);
+    }
+    Serial.println("Rear wheels retracted.");
+}
 
 void AnySpace1::raiseBodyToNextStair()
 {
@@ -428,32 +504,79 @@ void AnySpace1::raiseBodyToNextStair()
             stopHeightMotors();
             Serial.println("Body raised to next stair.");
             delay(20); // To make sure the motors have completely stopped
-            go_vertically(OVERCLIMB_HEIGHT);
-            while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning() || wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
-            {
-                Serial.println("Overclimbing...");
-                delay(10);
-            }
-            run_forward();
-            while (true)
-            {
-                get_sensor_data();
-                print_sensor_data();
-                if (sensor_data[FRONT_LEFT] < SAFE_SENSOR_READING_TO_EXTRACT_FRONT_WHEELS)
-                {
-                    stop();
-                    Serial.println("Front wheels on stair.");
-                    break;
-                }
-            }
+            break;
 
-            // go_n_steps(SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS);
-            wheels[0]->height->_stepper->moveTo(0);
-            wheels[1]->height->_stepper->moveTo(0);
-            //  go_n_steps(SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS);
-            //  wheels[2]->height->moveToPosition(0);
-            //  wheels[3]->height->moveToPosition(0);
+            // // go_n_steps(SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS);
+            // wheels[0]->height->_stepper->moveTo(0);
+            // wheels[1]->height->_stepper->moveTo(0);
+
+            // run_forward();
+            // while (true)
+            // {
+            //     get_sensor_data();
+            //     print_sensor_data();
+            //     if (sensor_data[FRONT_LEFT] < SAFE_SENSOR_READING_TO_EXTRACT_REAR_WHEELS)
+            //     {
+            //         stop();
+            //         Serial.println("Front wheels on stair.");
+            //         break;
+            //     }
+            // }
+            // //  go_n_steps(SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS);
+            // wheels[2]->height->moveToPosition(0);
+            // wheels[3]->height->moveToPosition(0);
+            // break;
+        }
+    }
+    go_vertically(OVERCLIMB_HEIGHT);
+    while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning() || wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
+    {
+        Serial.println("Overclimbing...");
+        delay(10);
+    }
+}
+
+void AnySpace1::cleanStairs()
+{
+    // alignWithWall();
+    approachStairs();
+    steer_wheel(NEEDED_STEERING_PERPENDICULAR);
+    cleanLeftPart();
+    cleanRightPart();
+    steer_wheel(-NEEDED_STEERING_PERPENDICULAR);
+    Serial.println("Finished cleaning one stair.");
+}
+
+void AnySpace1::cleanLeftPart()
+{
+    run_forward();
+    while (true)
+    {
+        get_sensor_data();
+        print_sensor_data();
+        if (sensor_data[LEFT] < CONSIDERED_CLEANED_SENSOR_DISTANCE)
+        {
+            stop();
+            Serial.println("Left part of the stair cleaned.");
             break;
         }
+        Serial.println("Cleaning left part of the stair...");
+    }
+}
+
+void AnySpace1::cleanRightPart()
+{
+    run_backward();
+    while (true)
+    {
+        get_sensor_data();
+        print_sensor_data();
+        if (sensor_data[RIGHT] < CONSIDERED_CLEANED_SENSOR_DISTANCE)
+        {
+            stop();
+            Serial.println("Right part of the stair cleaned.");
+            break;
+        }
+        Serial.println("Cleaning right part of the stair...");
     }
 }

@@ -6,9 +6,9 @@ enum Vl53l0xSensor
 {
     STAIR_WALL1,
     STAIR_WALL2,
+    LEFT,
+    RIGHT,
     FLOOR_BELOW,
-    FRONT,
-    REAR,
     NUM_SENSORS // This will be 5
 };
 
@@ -39,14 +39,17 @@ enum Wheel
 // Algorithm parameters
 #define DISTANCE_TO_WALL 200.0 // in mm
 #define ALIGN_THRESHOLD 5.0
-#define CLIMBABLE_DISTANCE_TO_WALL 20.0                // in mm
-#define OVERCLIMB_HEIGHT 6.5                           // in mm
-#define MAX_HEIGHT 17.5                                // in mm
+#define CLIMBABLE_DISTANCE_TO_WALL 2.0                 // in mm
+#define OVERCLIMB_HEIGHT 6.2                           // we need to adjust without the shamgumi                             // in mm
+#define MAX_HEIGHT 16.5                                // in mm
 #define NEXT_STAIR_DISTANCE 15.0                       // in mm
-#define SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS 100.0    // in mm
-#define SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS 50.0      // in mm
+#define SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS 100.0    // in mm we are not using this
+#define SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS 50.0      // in mm we are not using this
 #define SAFE_SENSOR_READING_TO_EXTRACT_FRONT_WHEELS 26 // in mm
+#define SAFE_SENSOR_READING_TO_EXTRACT_REAR_WHEELS 11  // in mm we are not using this
 #define SENSOR_CORRECTION 12.143
+#define NEEDED_STEERING_PERPENDICULAR 85.0 // TODO:in a unit
+#define CONSIDERED_CLEANED_SENSOR_DISTANCE 3.0
 
 // --- Pin Definitions ---
 
@@ -59,8 +62,8 @@ enum Wheel
 // --- Front Left Wheel Pins ---
 #define FL_DRIVE_STEP_PIN 36
 #define FL_DRIVE_DIR_PIN 37
-#define FL_STEER_STEP_PIN 4
-#define FL_STEER_DIR_PIN 5
+#define FL_STEER_STEP_PIN 16
+#define FL_STEER_DIR_PIN 15
 #define FL_HEIGHT_STEP_PIN 46
 #define FL_HEIGHT_DIR_PIN 3
 
@@ -75,8 +78,8 @@ enum Wheel
 // --- Rear Left Wheel Pins ---
 #define RL_DRIVE_STEP_PIN 40
 #define RL_DRIVE_DIR_PIN 41
-#define RL_STEER_STEP_PIN 16
-#define RL_STEER_DIR_PIN 15
+#define RL_STEER_STEP_PIN 4 // 16
+#define RL_STEER_DIR_PIN 5  // 15
 #define RL_HEIGHT_STEP_PIN 13
 #define RL_HEIGHT_DIR_PIN 12
 

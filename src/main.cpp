@@ -66,8 +66,14 @@ void setup()
     //   cleaning_robot.go_vertically(30);
     //   delay(500);
     // vacUnit = new Vacuum();
-    // cleaning_robot.go_initial_state();
+    cleaning_robot.go_initial_state();
     cleaning_robot.climb_stairs();
+    // cleaning_robot.alignWithWall();
+    // for (int i = 0; i < 2; i++)
+    // {
+    //     cleaning_robot.climb_stairs();
+    //     cleaning_robot.cleanStairs();
+    // }
 
     // m_drive = engine.stepperConnectToPin(FL_DRIVE_STEP_PIN);
     // m_drive->setDirectionPin(FL_DRIVE_DIR_PIN, /*dir_high_is_forward=*/true);
