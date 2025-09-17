@@ -6,10 +6,12 @@
 ArticulatedWheel::ArticulatedWheel(FastAccelStepperEngine *engine, Adafruit_ADS1115 *_ads , uint8_t drive_step_pin, uint8_t drive_dir_pin,
                                    uint8_t steer_step_pin, uint8_t steer_dir_pin,
                                    uint8_t height_step_pin, uint8_t height_dir_pin, uint8_t _homingPin,
-                                   bool invert_drive, bool invert_steer, bool invert_height)
+                                   bool invert_drive, bool invert_steer, bool invert_height,bool has_drive, bool has_steer)
 {
-    drive = new Stepper(engine, drive_step_pin, drive_dir_pin, invert_drive);
-    steer = new Stepper(engine, steer_step_pin, steer_dir_pin, invert_steer);
+    drive = has_drive ? new Stepper(engine, drive_step_pin, drive_dir_pin, invert_drive) : nullptr;
+    steer = has_steer ? new Stepper(engine, steer_step_pin, steer_dir_pin, invert_steer) : nullptr;
+    //drive = new Stepper(engine, drive_step_pin, drive_dir_pin, invert_drive);
+    //steer = new Stepper(engine, steer_step_pin, steer_dir_pin, invert_steer);
     height = new Stepper(engine, height_step_pin, height_dir_pin, invert_height);
     homingPin = _homingPin;
     ads = _ads;
@@ -24,15 +26,17 @@ void ArticulatedWheel::begin(float max_drive_speed,
                              float acceleration_steer,
                              float acceleration_height)
 { // Those are the Default Speeds
-    drive->init(max_drive_speed, acceleration_drive, CONVERSION_FACTOR_DRIVE);
-    steer->init(max_steer_speed, acceleration_steer, CONVERSION_FACTOR_STEER);
+    if (drive) {
+    drive->init(max_drive_speed, acceleration_drive, CONVERSION_FACTOR_DRIVE);}
+    if (steer) {
+    steer->init(max_steer_speed, acceleration_steer, CONVERSION_FACTOR_STEER);}
     height->init(max_height_speed, acceleration_height, CONVERSION_FACTOR_HEIGHT);
     
 }
 
 bool ArticulatedWheel::checkHomingPin()
 {
-    if (ads->readADC_SingleEnded(homingPin)>=1000){return true   ;}
+    if (ads->readADC_SingleEnded(homingPin)>=10000){return true   ;}
     return false;
 
 }

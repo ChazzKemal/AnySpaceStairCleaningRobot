@@ -62,7 +62,9 @@ void setup()
 
   // wheel1->begin();
   cleaning_robot.begin();
-  cleaning_robot.home();
+  //cleaning_robot.home();
+  cleaning_robot.go_vertically(30);
+  delay(500);
   vacUnit = new Vacuum();
   // m_drive = engine.stepperConnectToPin(FL_DRIVE_STEP_PIN);
   // m_drive->setDirectionPin(FL_DRIVE_DIR_PIN, /*dir_high_is_forward=*/true);
@@ -82,16 +84,15 @@ void setup()
 
 void loop()
 {
-
+  cleaning_robot.run();
   // Serial.println(ads->readADC_SingleEnded(0));
   vacUnit->turnOnBrizzles();
   vacUnit->turnOnVacuum();
-  delay(500);
-  vacUnit->turnOffBrizzles();
-  vacUnit->turnOffVacuum();
-  delay(500);
+  // delay(1000);
+  // vacUnit->turnOffBrizzles();
+  // vacUnit->turnOffVacuum();
 
-  // cleaning_robot.run();
+
   //  wheel1->drive->moveToPosition(300);
   //  delay(1000);
   //  wheel1->drive->moveToPosition(-300);

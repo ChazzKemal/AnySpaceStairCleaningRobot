@@ -56,7 +56,8 @@ public:
     ArticulatedWheel(FastAccelStepperEngine *engine, Adafruit_ADS1115 *ads ,uint8_t drive_step_pin, uint8_t drive_dir_pin,
                      uint8_t steer_step_pin, uint8_t steer_dir_pin,
                      uint8_t height_step_pin, uint8_t height_dir_pin, uint8_t homingPin,
-                     bool invert_drive = false, bool invert_steer = false, bool invert_height = false);
+                     bool invert_drive = false, bool invert_steer = false, bool invert_height = false
+                     ,bool has_drive = true, bool has_steer = true);
 
     /**
      * @brief Initializes the motors for this wheel.

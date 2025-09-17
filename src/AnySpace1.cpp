@@ -35,8 +35,8 @@ void AnySpace1::begin()
     }
     wheels[0]->begin();
     wheels[1]->begin();
-    //wheels[2]->begin();
-    // wheels[3]->begin();
+    wheels[2]->begin();
+    wheels[3]->begin();
     // for (auto &wheel : wheels)
     // {
     //     wheel->begin();
@@ -55,20 +55,20 @@ AnySpace1::AnySpace1()
     ads = new Adafruit_ADS1115();
 
     // Now, create the wheels.
-    wheels[0] = new ArticulatedWheel(m_engine, ads, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN, FL_INVERT_DRIVE, FL_INVERT_STEER, FL_INVERT_HEIGHT);
-    wheels[1] = new ArticulatedWheel(m_engine, ads, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FL_HOME_PIN, FR_INVERT_DRIVE, FR_INVERT_STEER, FR_INVERT_HEIGHT);
-    // wheels[2] = new ArticulatedWheel(m_engine, ads, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, FL_HOME_PIN, RL_INVERT_DRIVE, RL_INVERT_STEER, RL_INVERT_HEIGHT);
-    wheels[2] = new ArticulatedWheel(m_engine, ads, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, FL_HOME_PIN, RR_INVERT_DRIVE, RR_INVERT_STEER, RR_INVERT_HEIGHT);
+    wheels[0] = new ArticulatedWheel(m_engine, ads, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN, FL_INVERT_DRIVE, FL_INVERT_STEER, FL_INVERT_HEIGHT,FL_HAS_DRIVE, FL_HAS_STEER);
+    wheels[1] = new ArticulatedWheel(m_engine, ads, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FL_HOME_PIN, FR_INVERT_DRIVE, FR_INVERT_STEER, FR_INVERT_HEIGHT,FR_HAS_DRIVE, FR_HAS_STEER);
+    wheels[2] = new ArticulatedWheel(m_engine, ads, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, FL_HOME_PIN, RL_INVERT_DRIVE, RL_INVERT_STEER, RL_INVERT_HEIGHT,RL_HAS_DRIVE, RL_HAS_STEER);
+    wheels[3] = new ArticulatedWheel(m_engine, ads, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, FL_HOME_PIN, RR_INVERT_DRIVE, RR_INVERT_STEER, RR_INVERT_HEIGHT,RR_HAS_DRIVE, RR_HAS_STEER);
 }
 
 void AnySpace1::home()
 {
-    bool height_seek[NUM_WHEELS] = {true};
-    bool steer_seek[NUM_WHEELS] = {false};
+    bool height_seek[NUM_WHEELS] = {true, true, true, true};
+    bool steer_seek[NUM_WHEELS] = {false,false,false,false};
     wheels[0]->height->_stepper->runForward(); // max step rate (steps/second)
     wheels[1]->height->_stepper->runForward(); // TODO: change to height
-    //wheels[2]->height->_stepper->runForward(); // max step rate (steps/second)
-    // wheels[3]->height->_stepper->runForward(); // TODO: change to height
+    wheels[2]->height->_stepper->runForward(); // max step rate (steps/second)
+    wheels[3]->height->_stepper->runForward(); // TODO: change to height
     
     // for (auto &wheel : wheels)
     // {
@@ -79,7 +79,7 @@ void AnySpace1::home()
     int homed_wheels = 0;
     while (!all_homed)
     {
-        for (int i = 0; i < 1; ++i) //< NUM_WHEELS; ++i)
+        for (int i = 0; i < NUM_WHEELS; ++i)
         {
             // Check if this specific motor is still running
             if (height_seek[i])
@@ -92,8 +92,9 @@ void AnySpace1::home()
                     Serial.print("Wheel height ");
                     Serial.print(i);
                     Serial.println(" is home.");
-                    wheels[i]->height->moveSteps(-100); // Ensure motor goes back a bit
-                    wheels[i]->steer->_stepper->runForward();
+                    wheels[i]->height->moveSteps(-10); // Ensure motor goes back a bit
+                    if(wheels[i]->steer){
+                    wheels[i]->steer->_stepper->runForward();}
                     height_seek[i] = false;
                     steer_seek[i] = true;
                 }
@@ -101,13 +102,14 @@ void AnySpace1::home()
             if (steer_seek[i])
             {
                 if (wheels[i]->checkHomingPin() && !wheels[i]->height->_stepper->isRunning())
-                {
-                    wheels[i]->steer->_stepper->forceStopAndNewPosition(0);
+                {   
+                    if(wheels[i]->steer){
+                    wheels[i]->steer->_stepper->forceStopAndNewPosition(0);}
                     Serial.print("Wheel steer ");
                     Serial.print(i);
                     Serial.println(" is home.");
                     homed_wheels++;
-                    if (homed_wheels >= 1) // change this NUM_WHEELS)
+                    if (homed_wheels >= 4) // change this NUM_WHEELS)
                     {
                         all_homed = true;
                     }
@@ -121,7 +123,8 @@ void AnySpace1::go_n_steps(float n_steps)
 {
     for (auto &wheel : wheels)
     {
-        wheel->drive->moveRelative(n_steps);
+        if(wheel->drive){
+        wheel->drive->moveRelative(n_steps);}
     }
 }
 
@@ -129,7 +132,8 @@ void AnySpace1::reverse_direction()
 {
     for (auto &wheel : wheels)
     {
-        wheel->drive->invertDir = !wheel->drive->invertDir;
+        if(wheel->drive){
+        wheel->drive->invertDir = !wheel->drive->invertDir;}
     }
 }
 void AnySpace1::go_vertically(float n_steps)
@@ -143,7 +147,8 @@ void AnySpace1::steer_wheel(float n_steps)
 {
     for (auto &wheel : wheels)
     {
-        wheel->steer->moveRelative(n_steps);
+        if(wheel->steer){
+        wheel->steer->moveRelative(n_steps);}
     }
 }
 void AnySpace1::get_sensor_data()
@@ -165,7 +170,8 @@ void AnySpace1::run_backward()
 {
     for (auto &wheel : wheels)
     {
-        wheel->drive->_stepper->runBackward();
+        if(wheel->drive){
+        wheel->drive->_stepper->runBackward();}
     }
 }
 
@@ -173,7 +179,8 @@ void AnySpace1::stop()
 {
     for (auto &wheel : wheels)
     {
-        wheel->drive->_stepper->forceStop();
+        if(wheel->drive){
+        wheel->drive->_stepper->forceStop();}
     }
 }
 
@@ -181,13 +188,24 @@ void AnySpace1::run()
 {
     // AnySpace1::get_sensor_data();
     // AnySpace1::print_sensor_data();
-
-    wheels[0]->drive->moveToPosition(300);
-    get_sensor_data();
-    print_sensor_data();
-    delay(2000);
-    wheels[0]->drive->moveToPosition(-300);
-    delay(2000);
+    int wheel_no = 0;
+    for (auto &wheel : wheels)
+    {   
+        
+        if(wheel->drive){
+            wheel_no++;
+        if(!wheel->drive->_stepper->isRunning()){
+        wheel->drive->moveRelative(300);}
+    Serial.println("wheel drive commanded");
+Serial.print(wheel_no); }
+    }
+    
+    // wheels[0]->drive->moveToPosition(300);
+    // get_sensor_data();
+    // print_sensor_data();
+    // delay(2000);
+    // wheels[0]->drive->moveToPosition(-300);
+    // delay(2000);
     // wheels[0]->height->moveToPosition(300);
     // delay(2000);
     // wheels[0]->height->moveToPosition(-300);
@@ -196,10 +214,10 @@ void AnySpace1::run()
     // delay(2000);
     // wheels[0]->steer->moveToPosition(-300);
     // delay(2000);
-    wheels[1]->drive->moveToPosition(300);
-    delay(2000);
-    wheels[1]->drive->moveToPosition(-300);
-    delay(2000);
+    // wheels[1]->drive->moveToPosition(300);
+    // delay(2000);
+    // wheels[1]->drive->moveToPosition(-300);
+    // delay(2000);
     // wheels[1]->drive->moveToPosition(0);
     // wheels[0]->steer->moveToPosition(0);
     // wheels[0]->height->moveToPosition(0);

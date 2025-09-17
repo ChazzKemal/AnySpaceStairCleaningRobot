@@ -44,15 +44,15 @@ enum Wheel
 
 // --- channels of the adc necessary for homing ---
 #define FL_HOME_PIN 0 // 
-#define FR_HOME_PIN 1
-#define RL_HOME_PIN 2
-#define RR_HOME_PIN 3
+#define FR_HOME_PIN 0
+#define RL_HOME_PIN 0
+#define RR_HOME_PIN 0
 
 // --- Front Left Wheel Pins ---
-#define FL_DRIVE_STEP_PIN 5
+#define FL_DRIVE_STEP_PIN 36
 #define FL_DRIVE_DIR_PIN 37
-#define FL_STEER_STEP_PIN 36
-#define FL_STEER_DIR_PIN 4
+#define FL_STEER_STEP_PIN 4
+#define FL_STEER_DIR_PIN 5
 #define FL_HEIGHT_STEP_PIN 46
 #define FL_HEIGHT_DIR_PIN 3
 
@@ -103,6 +103,18 @@ enum Wheel
 #define CONVERSION_FACTOR_DRIVE 1  // Example: 0.1 mm per step
 #define CONVERSION_FACTOR_STEER 1  // Example: 0.
 #define CONVERSION_FACTOR_HEIGHT 1 // Example: 0.1 mm per step
+
+#define FL_HAS_DRIVE true
+#define FL_HAS_STEER true
+
+#define FR_HAS_DRIVE true
+#define FR_HAS_STEER true
+
+#define RL_HAS_DRIVE false
+#define RL_HAS_STEER false
+
+#define RR_HAS_DRIVE false
+#define RR_HAS_STEER false
 
 
 // ----------------------  Vacuum stuff
