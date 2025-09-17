@@ -337,21 +337,25 @@ void AnySpace1::alignWithWall()
         else
         {
             // Neither side stopped yet → check if one reaches initial wall threshold
-            if (left_distance < DISTANCE_TO_WALL && !left_stopped)
+            if (diff < 0 && !left_stopped)
             {
-                // wheels[FRONT_LEFT]->drive->_stepper->forceStop();
-                wheels[FRONT_LEFT]->drive->_stepper->runBackward();
-                // wheels[2]->drive->_stepper->forceStop();
-                Serial.println("Left wheel reached wall distance, stopping left side.");
-                left_stopped = true;
+                if (left_distance < DISTANCE_TO_WALL)
+                {
+                    wheels[FRONT_LEFT]->drive->_stepper->runBackward();
+                    Serial.println("Left wheel reached wall distance, moving back.");
+                    left_stopped = true;
+                }
             }
-            if (right_distance < DISTANCE_TO_WALL && !right_stopped)
-            {
-                wheels[FRONT_RIGHT]->drive->_stepper->runBackward();
 
-                // wheels[3]->drive->_stepper->forceStop();
-                Serial.println("Right wheel reached wall distance, stopping left side.");
-                right_stopped = true;
+            // Right side closer → check only right
+            else if (diff > 0 && !right_stopped)
+            {
+                if (right_distance < DISTANCE_TO_WALL)
+                {
+                    wheels[FRONT_RIGHT]->drive->_stepper->runBackward();
+                    Serial.println("Right wheel reached wall distance, moving back.");
+                    right_stopped = true;
+                }
             }
             Serial.println("Aligning with wall...");
         }
