@@ -55,21 +55,21 @@ AnySpace1::AnySpace1()
     ads = new Adafruit_ADS1115();
 
     // Now, create the wheels.
-    wheels[0] = new ArticulatedWheel(m_engine, ads, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN, FL_INVERT_DRIVE, FL_INVERT_STEER, FL_INVERT_HEIGHT,FL_HAS_DRIVE, FL_HAS_STEER);
-    wheels[1] = new ArticulatedWheel(m_engine, ads, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FL_HOME_PIN, FR_INVERT_DRIVE, FR_INVERT_STEER, FR_INVERT_HEIGHT,FR_HAS_DRIVE, FR_HAS_STEER);
-    wheels[2] = new ArticulatedWheel(m_engine, ads, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, FL_HOME_PIN, RL_INVERT_DRIVE, RL_INVERT_STEER, RL_INVERT_HEIGHT,RL_HAS_DRIVE, RL_HAS_STEER);
-    wheels[3] = new ArticulatedWheel(m_engine, ads, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, FL_HOME_PIN, RR_INVERT_DRIVE, RR_INVERT_STEER, RR_INVERT_HEIGHT,RR_HAS_DRIVE, RR_HAS_STEER);
+    wheels[0] = new ArticulatedWheel(m_engine, ads, FL_DRIVE_STEP_PIN, FL_DRIVE_DIR_PIN, FL_STEER_STEP_PIN, FL_STEER_DIR_PIN, FL_HEIGHT_STEP_PIN, FL_HEIGHT_DIR_PIN, FL_HOME_PIN, FL_INVERT_DRIVE, FL_INVERT_STEER, FL_INVERT_HEIGHT, FL_HAS_DRIVE, FL_HAS_STEER);
+    wheels[1] = new ArticulatedWheel(m_engine, ads, FR_DRIVE_STEP_PIN, FR_DRIVE_DIR_PIN, FR_STEER_STEP_PIN, FR_STEER_DIR_PIN, FR_HEIGHT_STEP_PIN, FR_HEIGHT_DIR_PIN, FL_HOME_PIN, FR_INVERT_DRIVE, FR_INVERT_STEER, FR_INVERT_HEIGHT, FR_HAS_DRIVE, FR_HAS_STEER);
+    wheels[2] = new ArticulatedWheel(m_engine, ads, RL_DRIVE_STEP_PIN, RL_DRIVE_DIR_PIN, RL_STEER_STEP_PIN, RL_STEER_DIR_PIN, RL_HEIGHT_STEP_PIN, RL_HEIGHT_DIR_PIN, FL_HOME_PIN, RL_INVERT_DRIVE, RL_INVERT_STEER, RL_INVERT_HEIGHT, RL_HAS_DRIVE, RL_HAS_STEER);
+    wheels[3] = new ArticulatedWheel(m_engine, ads, RR_DRIVE_STEP_PIN, RR_DRIVE_DIR_PIN, RR_STEER_STEP_PIN, RR_STEER_DIR_PIN, RR_HEIGHT_STEP_PIN, RR_HEIGHT_DIR_PIN, FL_HOME_PIN, RR_INVERT_DRIVE, RR_INVERT_STEER, RR_INVERT_HEIGHT, RR_HAS_DRIVE, RR_HAS_STEER);
 }
 
 void AnySpace1::home()
 {
     bool height_seek[NUM_WHEELS] = {true, true, true, true};
-    bool steer_seek[NUM_WHEELS] = {false,false,false,false};
+    bool steer_seek[NUM_WHEELS] = {false, false, false, false};
     wheels[0]->height->_stepper->runForward(); // max step rate (steps/second)
     wheels[1]->height->_stepper->runForward(); // TODO: change to height
     wheels[2]->height->_stepper->runForward(); // max step rate (steps/second)
     wheels[3]->height->_stepper->runForward(); // TODO: change to height
-    
+
     // for (auto &wheel : wheels)
     // {
     //     wheel->height->_stepper->runForward();
@@ -93,8 +93,10 @@ void AnySpace1::home()
                     Serial.print(i);
                     Serial.println(" is home.");
                     wheels[i]->height->moveSteps(-10); // Ensure motor goes back a bit
-                    if(wheels[i]->steer){
-                    wheels[i]->steer->_stepper->runForward();}
+                    if (wheels[i]->steer)
+                    {
+                        wheels[i]->steer->_stepper->runForward();
+                    }
                     height_seek[i] = false;
                     steer_seek[i] = true;
                 }
@@ -102,9 +104,11 @@ void AnySpace1::home()
             if (steer_seek[i])
             {
                 if (wheels[i]->checkHomingPin() && !wheels[i]->height->_stepper->isRunning())
-                {   
-                    if(wheels[i]->steer){
-                    wheels[i]->steer->_stepper->forceStopAndNewPosition(0);}
+                {
+                    if (wheels[i]->steer)
+                    {
+                        wheels[i]->steer->_stepper->forceStopAndNewPosition(0);
+                    }
                     Serial.print("Wheel steer ");
                     Serial.print(i);
                     Serial.println(" is home.");
@@ -123,8 +127,10 @@ void AnySpace1::go_n_steps(float n_steps)
 {
     for (auto &wheel : wheels)
     {
-        if(wheel->drive){
-        wheel->drive->moveRelative(n_steps);}
+        if (wheel->drive)
+        {
+            wheel->drive->moveRelative(n_steps);
+        }
     }
 }
 
@@ -132,8 +138,10 @@ void AnySpace1::reverse_direction()
 {
     for (auto &wheel : wheels)
     {
-        if(wheel->drive){
-        wheel->drive->invertDir = !wheel->drive->invertDir;}
+        if (wheel->drive)
+        {
+            wheel->drive->invertDir = !wheel->drive->invertDir;
+        }
     }
 }
 void AnySpace1::go_vertically(float n_steps)
@@ -147,8 +155,10 @@ void AnySpace1::steer_wheel(float n_steps)
 {
     for (auto &wheel : wheels)
     {
-        if(wheel->steer){
-        wheel->steer->moveRelative(n_steps);}
+        if (wheel->steer)
+        {
+            wheel->steer->moveRelative(n_steps);
+        }
     }
 }
 void AnySpace1::get_sensor_data()
@@ -161,8 +171,10 @@ void AnySpace1::run_forward()
 {
     for (auto &wheel : wheels)
     {
-        wheel->drive->_stepper->runForward();
-        break;
+        if (wheel->drive)
+        {
+            wheel->drive->_stepper->runForward();
+        }
     }
 }
 
@@ -170,8 +182,10 @@ void AnySpace1::run_backward()
 {
     for (auto &wheel : wheels)
     {
-        if(wheel->drive){
-        wheel->drive->_stepper->runBackward();}
+        if (wheel->drive)
+        {
+            wheel->drive->_stepper->runBackward();
+        }
     }
 }
 
@@ -179,8 +193,10 @@ void AnySpace1::stop()
 {
     for (auto &wheel : wheels)
     {
-        if(wheel->drive){
-        wheel->drive->_stepper->forceStop();}
+        if (wheel->drive)
+        {
+            wheel->drive->_stepper->forceStop();
+        }
     }
 }
 
@@ -190,48 +206,38 @@ void AnySpace1::run()
     // AnySpace1::print_sensor_data();
     int wheel_no = 0;
     for (auto &wheel : wheels)
-    {   
-        
-        if(wheel->drive){
+    {
+
+        if (wheel->drive)
+        {
             wheel_no++;
-        if(!wheel->drive->_stepper->isRunning()){
-        wheel->drive->moveRelative(300);}
-    Serial.println("wheel drive commanded");
-Serial.print(wheel_no); }
+            if (!wheel->drive->_stepper->isRunning())
+            {
+                wheel->drive->moveRelative(300);
+            }
+            Serial.println("wheel drive commanded");
+            Serial.println(wheel_no);
+        }
     }
-    
-    // wheels[0]->drive->moveToPosition(300);
-    // get_sensor_data();
-    // print_sensor_data();
-    // delay(2000);
-    // wheels[0]->drive->moveToPosition(-300);
-    // delay(2000);
-    // wheels[0]->height->moveToPosition(300);
-    // delay(2000);
-    // wheels[0]->height->moveToPosition(-300);
-    // delay(2000);
-    // wheels[0]->steer->moveToPosition(300);
-    // delay(2000);
-    // wheels[0]->steer->moveToPosition(-300);
-    // delay(2000);
-    // wheels[1]->drive->moveToPosition(300);
-    // delay(2000);
-    // wheels[1]->drive->moveToPosition(-300);
-    // delay(2000);
-    // wheels[1]->drive->moveToPosition(0);
-    // wheels[0]->steer->moveToPosition(0);
-    // wheels[0]->height->moveToPosition(0);
-    // wheels[0]->drive->moveToPosition(0);
-    // delay(2000);
-    // stop();
-    // run_backward();
-    // delay(500);
-    // stop();
-    // delay(1000);
-    // steer_wheel(200);
-    // delay(500);
-    // go_vertically(200);
-    // delay(500);
+    for (int i = 0; i < NUM_WHEELS; ++i)
+    {
+        // Get a reference to the current wheel for cleaner code
+        auto &wheel = wheels[i];
+
+        if (wheel->steer)
+        {
+            static int steer_directions[NUM_WHEELS] = {1, 1, 1, 1};
+
+            wheel_no++;
+            if (!wheel->steer->_stepper->isRunning())
+            {
+                wheel->steer->moveRelative(steer_directions[i] * 30);
+                steer_directions[i] *= -1;
+            }
+            Serial.println("wheel rotate commanded");
+            Serial.println(wheel_no);
+        }
+    }
 }
 
 void AnySpace1::go_initial_state()
@@ -242,39 +248,26 @@ void AnySpace1::go_initial_state()
     //     wheel->height->moveToPosition(INITIAL_STEER_ANGLE);
     // }
 
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < NUM_WHEELS; ++i)
     {
         // Check if the pointer is valid before using it to prevent crashes
-        if (wheels[i] != nullptr)
+        if (wheels[i]->steer)
         {
-            wheels[i]->steer->moveToPosition(INITIAL_HEIGHT);
-            wheels[i]->height->moveToPosition(INITIAL_STEER_ANGLE);
+            wheels[i]->steer->moveToPosition(INITIAL_STEER_ANGLE);
         }
+        wheels[i]->height->moveToPosition(INITIAL_HEIGHT);
     }
-
-    // bool motors_running;
-    // do
-    // {
-    //     motors_running = false;
-    //     for (auto &wheel : wheels)
-    //     {
-    //         if (wheel->height->_stepper->isRunning() || wheel->steer->_stepper->isRunning())
-    //         {
-    //             motors_running = true;
-    //             break;
-    //         }
-    //     }
-    // } while (motors_running);
 
     bool motors_running;
     do
     {
         motors_running = false;
-        for (int j = 0; j < 2; ++j) // < NUM_WHEELS; ++j)
+        for (int j = 0; j < NUM_WHEELS; ++j)
         {
             auto wheel = wheels[j];
 
-            if (wheel->height->_stepper->isRunning() || wheel->steer->_stepper->isRunning())
+            if (wheel->height->_stepper->isRunning() ||
+                (wheel->steer && wheel->steer->_stepper->isRunning()))
             {
                 motors_running = true;
                 break;
@@ -284,7 +277,7 @@ void AnySpace1::go_initial_state()
     Serial.println("Reached initial state.");
 }
 
-void AnySpace1::align_with_wall()
+void AnySpace1::alignWithWall()
 {
     bool left_stopped = false;
     bool right_stopped = false;
@@ -294,13 +287,20 @@ void AnySpace1::align_with_wall()
     // {
     //     wheel->drive->_stepper->runForward();
     // }
-    wheels[0]->drive->_stepper->runForward();
-    wheels[1]->drive->_stepper->runForward();
+    // for (auto &wheel : wheels)
+    // {
+    //     if (wheel->drive)
+    //     {
+    //         wheel->drive->_stepper->runForward();
+    //     }
+    // }
+    run_forward();
 
     while (true)
     {
         get_sensor_data();
-        // print_sensor_data();
+
+        print_sensor_data();
         float left_distance = this->sensor_data[STAIR_WALL1];
         float right_distance = this->sensor_data[STAIR_WALL2];
 
@@ -313,7 +313,8 @@ void AnySpace1::align_with_wall()
         {
             if (diff < ALIGN_THRESHOLD)
             {
-                wheels[1]->drive->_stepper->forceStop();
+                wheels[FRONT_LEFT]->drive->_stepper->forceStop();
+                wheels[FRONT_RIGHT]->drive->_stepper->forceStop();
                 // wheels[3]->drive->_stepper->forceStop();
                 right_stopped = true;
                 Serial.println("Aligned with wall.");
@@ -325,7 +326,8 @@ void AnySpace1::align_with_wall()
         {
             if (diff < ALIGN_THRESHOLD)
             {
-                wheels[0]->drive->_stepper->forceStop();
+                wheels[FRONT_LEFT]->drive->_stepper->forceStop();
+                wheels[FRONT_RIGHT]->drive->_stepper->forceStop();
                 // wheels[2]->drive->_stepper->forceStop();
                 left_stopped = true;
                 Serial.println("Aligned with wall.");
@@ -337,14 +339,18 @@ void AnySpace1::align_with_wall()
             // Neither side stopped yet → check if one reaches initial wall threshold
             if (left_distance < DISTANCE_TO_WALL && !left_stopped)
             {
-                wheels[0]->drive->_stepper->forceStop();
+                // wheels[FRONT_LEFT]->drive->_stepper->forceStop();
+                wheels[FRONT_LEFT]->drive->_stepper->runBackward();
                 // wheels[2]->drive->_stepper->forceStop();
+                Serial.println("Left wheel reached wall distance, stopping left side.");
                 left_stopped = true;
             }
             if (right_distance < DISTANCE_TO_WALL && !right_stopped)
             {
-                wheels[1]->drive->_stepper->forceStop();
+                wheels[FRONT_RIGHT]->drive->_stepper->runBackward();
+
                 // wheels[3]->drive->_stepper->forceStop();
+                Serial.println("Right wheel reached wall distance, stopping left side.");
                 right_stopped = true;
             }
             Serial.println("Aligning with wall...");
@@ -363,5 +369,68 @@ void AnySpace1::print_sensor_data()
         Serial.print(i);
         Serial.print(": ");
         Serial.println(this->sensor_data[i]);
+    }
+}
+void AnySpace1::climb_stairs()
+{
+    Serial.println("Climbing stairs...");
+    alignWithWall();
+    approachStairs();
+    //  raiseBodyToNextStair();
+    //  shiftWeightForwardOntoStair();
+    //  retractRearWheels();
+    Serial.println("Finished climbing one stair.");
+}
+
+void AnySpace1::approachStairs()
+{
+    Serial.println("Approaching stairs...");
+    run_forward();
+    while (true)
+    {
+        get_sensor_data();
+        print_sensor_data();
+        float left_distance = this->sensor_data[STAIR_WALL1];
+        if (left_distance < CLIMBABLE_DISTANCE_TO_WALL)
+        {
+            stop();
+            Serial.println("Reached stairs.");
+            break;
+        }
+    }
+}
+
+void AnySpace1::stopHeightMotors()
+{
+    for (auto &wheel : wheels)
+    {
+        wheel->height->_stepper->forceStop();
+    }
+}
+
+void AnySpace1::raiseBodyToNextStair()
+{
+    go_vertically(MAX_HEIGHT);
+    get_sensor_data();
+    float initial_distance_reading = sensor_data[FRONT_LEFT];
+    float distance_reading = sensor_data[FRONT_LEFT];
+    while (true)
+    {
+        get_sensor_data();
+        distance_reading = 0.5 * distance_reading + 0.5 * sensor_data[FRONT_LEFT];
+        if (distance_reading > initial_distance_reading + NEXT_STAIR_DISTANCE)
+        {
+            stopHeightMotors();
+            Serial.println("Body raised to next stair.");
+            delay(20); // To make sure the motors have completely stopped
+            go_vertically(OVERCLIMB_HEIGHT);
+            go_n_steps(SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS);
+            wheels[0]->height->moveToPosition(0);
+            wheels[1]->height->moveToPosition(0);
+            go_n_steps(SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS);
+            wheels[2]->height->moveToPosition(0);
+            wheels[3]->height->moveToPosition(0);
+            break;
+        }
     }
 }

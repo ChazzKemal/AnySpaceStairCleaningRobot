@@ -33,17 +33,23 @@ enum Wheel
 #define ACCEL_HEIGHT 1000.0
 
 // Initial State
-#define INITIAL_HEIGHT 20.0
-#define INITIAL_STEER_ANGLE 20.0
+#define INITIAL_HEIGHT 30.0
+#define INITIAL_STEER_ANGLE 0.0
 
 // Algorithm parameters
 #define DISTANCE_TO_WALL 200.0 // in mm
 #define ALIGN_THRESHOLD 50.0
+#define CLIMBABLE_DISTANCE_TO_WALL 40.0            // in mm
+#define OVERCLIMB_HEIGHT 20.0                      // in mm
+#define MAX_HEIGHT 100.0                           // in mm
+#define NEXT_STAIR_DISTANCE 100.0                  // in mm
+#define SAFE_DISTANCE_TO_EXTRACT_FRONT_WHEELS 20.0 // in mm
+#define SAFE_DISTANCE_TO_EXTRACT_REAR_WHEELS 50.0  // in mm
 
 // --- Pin Definitions ---
 
 // --- channels of the adc necessary for homing ---
-#define FL_HOME_PIN 0 // 
+#define FL_HOME_PIN 0 //
 #define FR_HOME_PIN 0
 #define RL_HOME_PIN 0
 #define RR_HOME_PIN 0
@@ -116,11 +122,8 @@ enum Wheel
 #define RR_HAS_DRIVE false
 #define RR_HAS_STEER false
 
-
 // ----------------------  Vacuum stuff
 #define VACUUM_PIN 35
-#define BRIZZLES_PIN 0 
-
-
+#define BRIZZLES_PIN 0
 
 #endif // ROBOT_CONFIG_H

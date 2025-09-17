@@ -26,6 +26,7 @@ public:
     // for height direction. Could be positive could be negative
     void go_vertically(float n_steps);
     // for steering direction. Could be positive could be negative
+    void stopHeightMotors();
     void steer_wheel(float n_steps);
     // get data from all sensors
     void get_sensor_data();
@@ -35,12 +36,17 @@ public:
     std::array<uint16_t, NUM_SENSORS> get_vl53l0x_data();
     void print_sensor_data();
     void go_initial_state();
-    void align_with_wall();
+    void alignWithWall();
+    void climb_stairs();
+    void approachStairs();
+    void raiseBodyToNextStair();
+    void shiftWeightForwardOntoStair();
+    void retractRearWheels();
     void home();
 
 private:
     Adafruit_MPU6050 mpu;
-    Adafruit_ADS1115 * ads ;
+    Adafruit_ADS1115 *ads;
     FastAccelStepperEngine *m_engine = new FastAccelStepperEngine();
     std::array<ArticulatedWheel *, NUM_WHEELS> wheels; // Changed to array of pointers
     // std::array<ArticulatedWheel, NUM_WHEELS> wheels;
@@ -49,7 +55,6 @@ private:
     std::array<uint16_t, NUM_SENSORS> sensor_data;
     float pitch = 0.0f;
     float roll = 0.0f;
-    
 };
 
 #endif
