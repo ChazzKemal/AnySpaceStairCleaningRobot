@@ -70,12 +70,16 @@ void setup()
     //  vacUnit = new Vacuum();
     delay(500);
     // cleaning_robot.go_initial_state();
-    //  cleaning_robot.climb_stairs();
+    for(int i=0; i<2; i++){
+    cleaning_robot.climb_stairs();
     vacUnit->turnOnBrizzles();
     vacUnit->turnOnVacuum();
     cleaning_robot.cleanStairs();
     vacUnit->turnOffBrizzles();
     vacUnit->turnOffVacuum();
+      delay(10);
+    }
+
     //  cleaning_robot.alignWithWall();
     //  for (int i = 0; i < 2; i++)
     //  {

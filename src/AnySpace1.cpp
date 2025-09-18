@@ -511,23 +511,23 @@ void AnySpace1::shiftCompleteWeightToStair()
             break;
         }
     }
-    wheels[2]->height->moveRelative(3);
-    wheels[3]->height->moveRelative(3);
-    while (wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
-    {
-        get_sensor_data();
-        Serial.println("Shifting complete weight to stair...");
-        delay(10);
-    }
-    wheels[0]->drive->moveRelative(75);
-    wheels[1]->drive->moveRelative(75);
+    // wheels[2]->height->moveRelative(3);
+    // wheels[3]->height->moveRelative(3);
+    // while (wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
+    // {
+    //     get_sensor_data();
+    //     Serial.println("Shifting complete weight to stair...");
+    //     delay(10);
+    // }
+    // wheels[0]->drive->moveRelative(75);
+    // wheels[1]->drive->moveRelative(75);
 
-    while (wheels[1]->drive->_stepper->isRunning() || wheels[0]->drive->_stepper->isRunning())
-    {
-        get_sensor_data();
-        Serial.println("Shifting complete weight to stair...");
-        delay(10);
-    }
+    // while (wheels[1]->drive->_stepper->isRunning() || wheels[0]->drive->_stepper->isRunning())
+    // {
+    //     get_sensor_data();
+    //     Serial.println("Shifting complete weight to stair...");
+    //     delay(10);
+    // }
 }
 
 void AnySpace1::retractRearWheels()
