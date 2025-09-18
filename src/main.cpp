@@ -24,6 +24,27 @@ Vacuum * vacUnit;
 // FastAccelStepper *m_drive = NULL;
 // ArticulatedWheel *wheel1;
 // Stepper *stepper;
+void setUpButtons(){
+  pinMode(START_BUTTON_PIN, INPUT_PULLUP);
+  pinMode(STOP_BUTTON_PIN, INPUT_PULLUP);
+}
+
+void waitForStartButton(){
+  while(digitalRead(START_BUTTON_PIN) == HIGH){
+    delay(50);
+  }
+}
+
+void waitIfStopIsPressed(AnySpace1 cleaning_robot){
+
+    cleaning_robot.stop();
+      while(digitalRead(START_BUTTON_PIN) == HIGH){
+        delay(50);
+  }
+
+
+}
+
 
 void setup()
 {
@@ -31,6 +52,9 @@ void setup()
   Serial.begin(115200);
 
   delay(500);
+
+  setUpButtons();
+  waitForStartButton();
 
   Serial.println("start code");
 

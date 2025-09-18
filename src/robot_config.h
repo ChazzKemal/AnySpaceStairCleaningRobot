@@ -102,6 +102,9 @@ enum Wheel
 #define VACUUM_PIN 35
 #define BRIZZLES_PIN 0 
 
+// start stop pin 
 
+#define START_BUTTON_PIN 20
+#define STOP_BUTTON_PIN 21
 
 #endif // ROBOT_CONFIG_H
