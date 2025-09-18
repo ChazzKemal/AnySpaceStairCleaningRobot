@@ -33,8 +33,8 @@ enum Wheel
 #define ACCEL_HEIGHT 1000.0
 
 // Initial State
-#define INITIAL_HEIGHT 30.0
-#define INITIAL_STEER_ANGLE 0.0
+#define INITIAL_HEIGHT 0.0
+#define INITIAL_STEER_ANGLE 90.0
 
 // Algorithm parameters
 #define DISTANCE_TO_WALL 200.0 // in mm
@@ -112,7 +112,7 @@ enum Wheel
 #define RR_INVERT_HEIGHT false
 
 #define CONVERSION_FACTOR_DRIVE 1      // Example: 0.1 mm per step
-#define CONVERSION_FACTOR_STEER 1      // Example: 0.
+#define CONVERSION_FACTOR_STEER 8.44   // Example: 0.
 #define CONVERSION_FACTOR_HEIGHT 36.76 // Example: 0.1 mm per step
 
 #define FL_HAS_DRIVE true
