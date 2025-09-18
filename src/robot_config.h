@@ -134,7 +134,7 @@ enum Wheel
 
 // ----------------------  Buttons
 
-#define START_BUTTON_PIN 20
-#define STOP_BUTTON_PIN 21
+#define START_BUTTON_PIN 21
+#define STOP_BUTTON_PIN 47
 
 #endif // ROBOT_CONFIG_H

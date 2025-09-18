@@ -198,6 +198,7 @@ void AnySpace1::get_sensor_data()
     if (stop_button_pressed)
     {
         stop();
+
         Serial.println("EMERGENCY STOP!");
         while (true)
         {
@@ -624,8 +625,8 @@ void AnySpace1::cleanStairs()
     cleanLeftPart();
     cleanRightPart();
 
-    wheels[0]->drive->moveRelative(-100);
-    wheels[1]->drive->moveRelative(-100);
+    wheels[0]->drive->moveRelative(-300);
+    wheels[1]->drive->moveRelative(-300);
 
     while (wheels[1]->drive->_stepper->isRunning() || wheels[0]->drive->_stepper->isRunning())
     {
