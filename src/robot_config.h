@@ -24,22 +24,22 @@ enum Wheel
 
 // --- Max Speed (steps/sec) ---
 #define MAX_DRIVE_SPEED 200.0
-#define MAX_STEER_SPEED 100.0
+#define MAX_STEER_SPEED 200.0
 #define MAX_HEIGHT_SPEED 100.0
 
 // --- Acceleration (steps/sec^2) ---
 #define ACCEL_DRIVE 3000.0
-#define ACCEL_STEER 1000.0
+#define ACCEL_STEER 3000.0
 #define ACCEL_HEIGHT 1000.0
 
 // Initial State
-#define INITIAL_HEIGHT 0.0
-#define INITIAL_STEER_ANGLE 90.0
+#define INITIAL_HEIGHT -0.5
+#define INITIAL_STEER_ANGLE 0.0
 
 // Algorithm parameters
 #define DISTANCE_TO_WALL 200.0 // in mm
 #define ALIGN_THRESHOLD 5.0
-#define CLIMBABLE_DISTANCE_TO_WALL 2.0                 // in mm
+#define CLIMBABLE_DISTANCE_TO_WALL 5.5                 // in mm
 #define OVERCLIMB_HEIGHT 6.2                           // we need to adjust without the shamgumi                             // in mm
 #define MAX_HEIGHT 16.5                                // in mm
 #define NEXT_STAIR_DISTANCE 15.0                       // in mm
@@ -48,8 +48,9 @@ enum Wheel
 #define SAFE_SENSOR_READING_TO_EXTRACT_FRONT_WHEELS 26 // in mm
 #define SAFE_SENSOR_READING_TO_EXTRACT_REAR_WHEELS 11  // in mm we are not using this
 #define SENSOR_CORRECTION 12.143
-#define NEEDED_STEERING_PERPENDICULAR 85.0 // TODO:in a unit
-#define CONSIDERED_CLEANED_SENSOR_DISTANCE 3.0
+#define NEEDED_STEERING_PERPENDICULAR 90.0
+#define CONSIDERED_CLEANED_SENSOR_DISTANCE 9.0
+#define RAISE_HEIGHT_FOR_STEERING -0.8
 
 // --- Pin Definitions ---
 
@@ -130,5 +131,10 @@ enum Wheel
 // ----------------------  Vacuum stuff
 #define VACUUM_PIN 35
 #define BRIZZLES_PIN 0
+
+// ----------------------  Buttons
+
+#define START_BUTTON_PIN 20
+#define STOP_BUTTON_PIN 21
 
 #endif // ROBOT_CONFIG_H

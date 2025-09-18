@@ -18,7 +18,9 @@ public:
     void run();
     // for drive movement, could be backwards could be forward
     void run_forward();
+    void run_forward_cleaning();
     void run_backward();
+    void run_backward_cleaning();
     void stop();
     void go_n_steps(float n_steps);
     // basically for drive direction
@@ -28,6 +30,7 @@ public:
     // for steering direction. Could be positive could be negative
     void stopHeightMotors();
     void steer_wheel(float n_steps);
+    void steer_wheel_cleaning(float n_steps);
     // get data from all sensors
     void get_sensor_data();
     // get data from mpu6050
@@ -47,7 +50,8 @@ public:
     void cleanStairs();
     void cleanLeftPart();
     void cleanRightPart();
-
+    void setUpButtons();
+    void waitForStartButton();
     void home();
 
 private:

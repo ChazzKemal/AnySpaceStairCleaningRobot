@@ -62,12 +62,15 @@ void setup()
 
     // wheel1->begin();
     cleaning_robot.begin();
-    // cleaning_robot.home();
-    //   cleaning_robot.go_vertically(30);
-    //   delay(500);
-    // vacUnit = new Vacuum();
-    cleaning_robot.go_initial_state();
-    // cleaning_robot.climb_stairs();
+    // cleaning_robot.waitForStartButton();
+    //  cleaning_robot.home();
+    //    cleaning_robot.go_vertically(30);
+    //    delay(500);
+    //  vacUnit = new Vacuum();
+    delay(500);
+    // cleaning_robot.go_initial_state();
+    //  cleaning_robot.climb_stairs();
+    cleaning_robot.cleanStairs();
     //  cleaning_robot.alignWithWall();
     //  for (int i = 0; i < 2; i++)
     //  {
