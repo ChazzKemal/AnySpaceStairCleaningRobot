@@ -4,6 +4,8 @@
 #include "ArticulatedWheel.h"
 #include "mpu_handler.h"
 
+volatile bool stop_button_pressed = false;
+
 std::array<float, NUM_SENSORS> AnySpace1::get_vl53l0x_data()
 {
     // Call the handler function and pass our private sensor array to it.
@@ -47,11 +49,19 @@ void AnySpace1::begin()
     // AnySpace1::align_with_wall();
 }
 
+void IRAM_ATTR onStopButtonPress()
+{
+
+    stop_button_pressed = true;
+}
+
 void AnySpace1::setUpButtons()
 {
 
     pinMode(START_BUTTON_PIN, INPUT_PULLUP);
     pinMode(STOP_BUTTON_PIN, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(STOP_BUTTON_PIN), onStopButtonPress, FALLING);
+    Serial.println("Emergency stop interrupt attached.");
 }
 void AnySpace1::waitForStartButton()
 {
@@ -185,6 +195,16 @@ void AnySpace1::get_sensor_data()
 {
     this->sensor_data = get_vl53l0x_data();
     std::tie(this->pitch, this->roll) = get_mpu_data();
+    if (stop_button_pressed)
+    {
+        stop();
+        Serial.println("EMERGENCY STOP!");
+        while (true)
+        {
+            delay(1000);
+            Serial.println("Robot is stopped. Please reset to continue.");
+        }
+    }
 }
 
 void AnySpace1::run_forward()
@@ -428,6 +448,7 @@ void AnySpace1::retractFrontWheels(float factor)
 
     while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Retracting front wheels...");
         delay(10);
     }
@@ -493,6 +514,7 @@ void AnySpace1::shiftCompleteWeightToStair()
     wheels[3]->height->moveRelative(3);
     while (wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Shifting complete weight to stair...");
         delay(10);
     }
@@ -501,6 +523,7 @@ void AnySpace1::shiftCompleteWeightToStair()
 
     while (wheels[1]->drive->_stepper->isRunning() || wheels[0]->drive->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Shifting complete weight to stair...");
         delay(10);
     }
@@ -513,6 +536,7 @@ void AnySpace1::retractRearWheels()
 
     while (wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Retracting rear wheels...");
         delay(10);
     }
@@ -562,6 +586,7 @@ void AnySpace1::raiseBodyToNextStair()
     go_vertically(OVERCLIMB_HEIGHT);
     while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning() || wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Overclimbing...");
         delay(10);
     }
@@ -574,6 +599,7 @@ void AnySpace1::cleanStairs()
     go_vertically(RAISE_HEIGHT_FOR_STEERING);
     while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning() || wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Raising body for steering...");
         delay(10);
     }
@@ -581,6 +607,7 @@ void AnySpace1::cleanStairs()
     steer_wheel_cleaning(NEEDED_STEERING_PERPENDICULAR);
     while (wheels[0]->steer->_stepper->isRunning() || wheels[1]->steer->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Steering to perpendicular...");
         delay(10);
     }
@@ -589,6 +616,7 @@ void AnySpace1::cleanStairs()
     go_vertically(-RAISE_HEIGHT_FOR_STEERING + 0.5);
     while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning() || wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Raising body for steering...");
         delay(10);
     }
@@ -596,9 +624,20 @@ void AnySpace1::cleanStairs()
     cleanLeftPart();
     cleanRightPart();
 
+    wheels[0]->drive->moveRelative(-100);
+    wheels[1]->drive->moveRelative(-100);
+
+    while (wheels[1]->drive->_stepper->isRunning() || wheels[0]->drive->_stepper->isRunning())
+    {
+        get_sensor_data();
+        Serial.println("Shifting complete weight to stair...");
+        delay(10);
+    }
+
     go_vertically(RAISE_HEIGHT_FOR_STEERING - 0.5);
     while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning() || wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Raising body for steering...");
         delay(10);
     }
@@ -606,6 +645,7 @@ void AnySpace1::cleanStairs()
     steer_wheel_cleaning(-NEEDED_STEERING_PERPENDICULAR);
     while (wheels[0]->steer->_stepper->isRunning() || wheels[1]->steer->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Steering to perpendicular...");
         delay(10);
     }
@@ -613,6 +653,7 @@ void AnySpace1::cleanStairs()
     go_vertically(-(RAISE_HEIGHT_FOR_STEERING)); // small extra to avoid any obstacle
     while (wheels[0]->height->_stepper->isRunning() || wheels[1]->height->_stepper->isRunning() || wheels[2]->height->_stepper->isRunning() || wheels[3]->height->_stepper->isRunning())
     {
+        get_sensor_data();
         Serial.println("Raising body for steering...");
         delay(10);
     }
@@ -652,4 +693,5 @@ void AnySpace1::cleanRightPart()
         }
         Serial.println("Cleaning right part of the stair...");
     }
+    delay(100);
 }

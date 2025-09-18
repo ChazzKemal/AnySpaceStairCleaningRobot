@@ -52,6 +52,7 @@ public:
     void cleanRightPart();
     void setUpButtons();
     void waitForStartButton();
+    void waitForStopButton();
     void home();
 
 private:
