@@ -625,8 +625,8 @@ void AnySpace1::cleanStairs()
     cleanLeftPart();
     cleanRightPart();
 
-    wheels[0]->drive->moveRelative(-300);
-    wheels[1]->drive->moveRelative(-300);
+    wheels[0]->drive->moveRelative(100);
+    wheels[1]->drive->moveRelative(-100);
 
     while (wheels[1]->drive->_stepper->isRunning() || wheels[0]->drive->_stepper->isRunning())
     {
@@ -694,5 +694,5 @@ void AnySpace1::cleanRightPart()
         }
         Serial.println("Cleaning right part of the stair...");
     }
-    delay(100);
+    delay(500);
 }
